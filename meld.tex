@@ -16,7 +16,7 @@ However, the expressions in the head may refer to other nodes, as long as those 
 
 Another big departure from Datalog-like languages is the use of linear logic~\cite{Girard95logic:its}. Traditional forward-chaining logic programming languages make only use of classical logic, in which derived facts are true forever. Many ad-hoc extensions~\cite{Liu98extendingdatalog,Ludascher95alogical} have been devised in the past to support state updates in Datalog, but most are extra-logical which makes it harder to reason about programs.
 
-With linear logic, we define two classes of facts: \emph{persistent facts} and \emph{linear facts}. Persistent facts, once derived, are true until the end of execution, while linear facts are true temporarily. When linear facts are used in a derivation, they are deleted from the database. This allows programs to transparently express state updates.
+With linear logic, we define two classes of facts: \emph{persistent facts} and \emph{linear facts}. Persistent facts, once derived, are true until the end of execution and work as in classical logic. Linear facts are true temporarily. When linear facts are used in a derivation, they are deleted from the database. This allows programs to transparently express state updates while keeping the full benefits of classical logic.
 
 We use a small subset of the original linear logic proof system with some extensions to improve
 the expressiveness of the language. We summarize the connectives used in Table~\ref{table:linear}.
@@ -45,7 +45,8 @@ the expressiveness of the language. We summarize the connectives used in Table~\
 \subsection{Example}
 
 In Fig.~\ref{code:visit} we present a complete \lang program for doing a visit of all nodes
-in a graph, starting at node $@1$. We first declare all the predicates. Note that \texttt{route} predicates are classified as structural predicates and that non \texttt{linear} facts are classified as persistent so the \texttt{edge} predicate is persistent while everything else is linear. Next, we declare our axioms, for the \texttt{edge} and \texttt{unvisited} data. Node $@1$ starts with the \texttt{visit(@1)} fact.
+in a graph, starting at node $@1$. We first declare all the predicates. Note that \texttt{route} predicates are classified as structural predicates and that non \texttt{linear} facts are classified as persistent so the \texttt{edge} predicate is persistent while everything else is linear. Next, we declare our axioms, for the \texttt{edge} and \texttt{unvisited} data.
+Node $@1$ starts with the \texttt{visit(@1)} fact.
 
 \begin{figure}[h!]
 \small\begin{verbatim}
@@ -54,10 +55,13 @@ type linear visit(node).
 type linear unvisited(node).
 type linear visited(node).
 
+// input data
 !edge(@1, @2). !edge(@2, @3). !edge(@1, @4). !edge(@2, @4).
-
 unvisited(@1). unvisited(@2). unvisited(@3). unvisited(@4).
+
 visit(@1).
+
+// the program rules
 
 visit(A), unvisited(A) -o
    visited(A), {B | !edge(A, B) | visit(B)}.
@@ -86,7 +90,7 @@ Computation facts are regular facts used to represent the program state.
 Sensing facts are facts about the current state of the runtime system, such as the placement
 of nodes in the CPU and scheduling information. In Meld, sensing facts
 were used to get information about the outside world, like temperature, touch, neighborhood status,
-etc.
+etc; while action facts were used by the robots to perform actions.
 
 Action facts are used to perform two main functions. One is for doing I/O or changing things
 in the user interface. For example, when we want to change the color of nodes or the label

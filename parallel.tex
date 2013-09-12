@@ -25,39 +25,6 @@ Once a thread goes idle, it decrements the global counter and changes its flag t
 goes to zero, the global flag is set to idle. Since every thread will be busy-waiting and checking
 the global flag, they will detect that it is idle and then exit the program.
 
-\subsection{Graph Clustering}
-
-The node partitioning is partially done at compile time by ordering the nodes by taking into account
-the graph structure and node proximity. After the parse and type-checking phases, the
-\emph{graph clustering} phase is called. It builds an internal representation of the graph by
-mapping each node address (used in the axioms) $a$ to a normalized node address $n$.
-
-Formally, this mapping is represented by a bijective function $M(x)$, where the domain is the set
-of nodes described in the source code and the codomain is the discrete interval $[0, N[$, where $N$
-is the number of nodes in the graph. The byte code of the program will then contain the pairs
-$(x, M(x))$ so that the runtime system can put this information to use.
-
-We use a "breadth-first" approach to build the node mapping. We first start with an arbitrary node
-$n_{zero}$ and define $M(n_{zero}) = 0$. Next, we pick all neighbors of $n_{zero}$ and define
-their mappings in increasing order. Recursively, we pick
-the node's neighbors in a breadth-first fashion, until all nodes have been visited.
-
-The nodes of the graph in Fig.~\ref{fig:clustering} have been mapped between 0 and 6 by starting
-at node 0. Now, if we have 2 threads we can easily partition the graph by assigning nodes $[0, 3]$
-to thread 0 and nodes $[4, 6]$ to thread 1. Note that when using this method we tend to assign
-clusters of nodes to threads, which limits the amount of communication between clusters. If we
-had used a random approach, the number of edges between the two clusters would potentially be greater,
-leading to more thread synchronization.
-
-\begin{figure}[h!]
-   \begin{center}
-   \resizebox{6cm}{!}{
-    \includegraphics[width=0.5\textwidth]{topologygraph.pdf}}
- \end{center}
-    \caption{Partitioning a program with 7 nodes.}
-    \label{fig:clustering}
-\end{figure}
-
 \subsection{Threads}
 
 The work queue is actually implemented as two queues. First, there's one double-linked list for nodes
@@ -71,16 +38,14 @@ in and if they have facts to process.
 
 \subsection{Nodes}
 
-%\begin{comment}
 \begin{figure}[h!]
      \centering
-   \resizebox{7cm}{!}{
+   \resizebox{8cm}{!}{
 
     \includegraphics[width=0.5\textwidth]{node.pdf}}
     \caption{The node data structure.}
     \label{fig:node}
 \end{figure}
-%\end{comment}
 
 In Fig.~\ref{fig:node} we present the node data structure and its fields. We summarize the data below:
 
@@ -114,9 +79,7 @@ Each node uses a trie per predicate to store facts. During evaluation of rule bo
 \emph{match object}, which matches some arguments of the target predicate to instantiated values, so
 that by searching the predicate trie from top to bottom, we can easily discard invalid trie branches.
 
-\begin{comment}
 \subsection{Memory Allocator}
 
 Memory allocation is done using pools of memory objects local to each thread. This reduces contention in
 memory allocation.
-\end{comment}
