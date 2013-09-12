@@ -1,0 +1,149 @@
+\lang is a \emph{forward chaining} logic programming language in the style of Datalog~\cite{Ullman:1990:PDK:533142}. The program is defined as a set of axioms (facts that are initially true) and a set of \emph{derivation rules}. Initially, we populate the \emph{database of facts} with the axioms and then we determine which derivation rules can be applied by using our current database. Once a rule is applied, we derive new facts, which are then added to the database
+This process is repeated until we reach \emph{quiescence}, that is, when we can no longer derive new facts.
+
+Each fact is an association between a \emph{predicate} and a tuple of values. A predicate is a pair with a name and a tuple of types (the argument types). \lang rules are type-checked using the predicate declarations in the header of the program. \lang sports a simple type system that includes the following types: \emph{node}, \emph{int}, \emph{float}, \emph{string}, \emph{bool} and \emph{list X}, where \emph{X} is any of the previous 5 types.
+
+Every derivation rule can be decomposed into one \emph{body} and one \emph{head}. The body contains the pre-requisites needed (including facts and constraints) to derive the expression in the head. Rules without bodies are allowed (they are the axioms) and rules without heads are also allowed.
+
+\subsection{Distribution}
+
+The first argument of every predicate must be typed as a \emph{node}. The node represents the location of some node in the \emph{graph structure}. Essentially, a program can be seen as a graph where nodes are concurrently doing simple sequential computations with some message exchanges with other nodes. The structure of this graph is defined through a special class of facts called \emph{structural facts}. These structural facts define communication paths between nodes.
+
+For distribution and data partitioning purposes, derivation rules are constrained by the expressions that can be written in the body. The body of every rule can only refer to facts in the same node.
+However, the expressions in the head may refer to other nodes, as long as those nodes are instantiated in the body of the rule. The database of the program can then be partitioned by the first argument of each fact. This is possible since the rules of the program only make use of facts from a single node.
+
+\subsection{Linearity}
+
+Another big departure from Datalog-like languages is the use of linear logic~\cite{Girard95logic:its}. Traditional forward-chaining logic programming languages make only use of classical logic, in which derived facts are true forever. Many ad-hoc extensions~\cite{Liu98extendingdatalog,Ludascher95alogical} have been devised in the past to support state updates in Datalog, but most are extra-logical which makes it harder to reason about programs.
+
+With linear logic, we define two classes of facts: \emph{persistent facts} and \emph{linear facts}. Persistent facts, once derived, are true until the end of execution, while linear facts are true temporarily. When linear facts are used in a derivation, they are deleted from the database. This allows programs to transparently express state updates.
+
+We use a small subset of the original linear logic proof system with some extensions to improve
+the expressiveness of the language. We summarize the connectives used in Table~\ref{table:linear}.
+
+\begin{table}
+   \begin{center}
+\resizebox{8.5cm}{!}{
+    \begin{tabular}{ | l | l | l |}
+    \hline
+    Connective & Place & Description \\ \hline \hline
+    $\emph{fact}(e_1, ...,e_n)$ & Body or Head & Linear facts. \\ \hline
+    $\bang \emph{fact}(e_1, ..., e_n)$ & Body or Head & Persistent facts. \\ \hline
+    $1$ & Head & Represents rules with an empty head. \\ \hline
+    $A \otimes B$ & Body and Head & Connect two expressions. \\ \hline
+    $\forall x. A$ & Rule & To represent variables defined inside the rule. \\ \hline
+    $\exists x. A$ & Head & Instantiates new node variables. \\ \hline
+    $A \lolli B$ & Rule & $\lolli$ means "linearly implies". \\& & $A$ is the body and $B$ is the head. \\ \hline
+    $\m{def} A. B$ & Head & Extension called definitions.\\ & & Used for comprehensions and aggregates. \\ \hline
+    \end{tabular}
+}
+\end{center}
+\caption{Connectives from Linear Logic used in \lang.}
+\label{table:linear}
+\end{table}
+
+\subsection{Example}
+
+In Fig.~\ref{code:visit} we present a complete \lang program for doing a visit of all nodes
+in a graph, starting at node $@1$. We first declare all the predicates. Note that \texttt{route} predicates are classified as structural predicates and that non \texttt{linear} facts are classified as persistent so the \texttt{edge} predicate is persistent while everything else is linear. Next, we declare our axioms, for the \texttt{edge} and \texttt{unvisited} data. Node $@1$ starts with the \texttt{visit(@1)} fact.
+
+\begin{figure}[h!]
+\small\begin{verbatim}
+type route edge(node, node).
+type linear visit(node).
+type linear unvisited(node).
+type linear visited(node).
+
+!edge(@1, @2). !edge(@2, @3). !edge(@1, @4). !edge(@2, @4).
+
+unvisited(@1). unvisited(@2). unvisited(@3). unvisited(@4).
+visit(@1).
+
+visit(A), unvisited(A) -o
+   visited(A), {B | !edge(A, B) | visit(B)}.
+
+visit(A), visited(A) -o visited(A).
+\end{verbatim}
+  \caption{Visit program.}
+  \label{code:visit}
+\end{figure}
+\normalsize
+
+The first rule of the program is fired if the node has a \texttt{visit} and a \texttt{unvisited} fact. When fired, we first derive \texttt{visited} to mark node as "visited" and use a
+comprehension to go through all the edge facts and derive \texttt{visit} in every one of them.
+This forces those nodes to be visited also. The second rule is fired when the node is already
+visited more than once: we keep the \texttt{visited} fact and delete \texttt{visit}.
+
+Note that it is very easy to prove properties about this program. First, a node is either
+\texttt{visited} or \texttt{unvisited}. Also, once \texttt{visited} it no longer changes to
+\texttt{unvisited}.
+
+\subsection{Sensing and acting}
+
+Apart from structural facts, \lang also employs \emph{computation facts}, \emph{sensing facts}
+and \emph{action facts}.
+Computation facts are regular facts used to represent the program state.
+Sensing facts are facts about the current state of the runtime system, such as the placement
+of nodes in the CPU and scheduling information. In Meld, sensing facts
+were used to get information about the outside world, like temperature, touch, neighborhood status,
+etc.
+
+Action facts are used to perform two main functions. One is for doing I/O or changing things
+in the user interface. For example, when we want to change the color of nodes or the label
+of edges, we just derive a new action fact and the action is performed in the interface.
+Another use of action facts is to change the order things are evaluated in the runtime system.
+It is possible to give hints to the virtual machine in order to prioritize the computation of
+some nodes. This is called \emph{coordination}.
+Action facts are linear facts which are consumed when the corresponding action is performed.
+
+\subsection{Rules}
+
+Rules are written as $A \lolli B$, where $A$ is the body of the rule and $B$ is the head.
+The body of the rule contains \emph{fact expressions} and constraints.
+Fact expressions are template facts that instantiate variables (from facts in the database)
+such as $\emph{fact}(X, Y, Z)$. Variables can be used again in the body for matching and
+also in the head when instantiating facts. Constraints are boolean expressions that must
+be true in order for the rule to be fired. Constraints use variables from fact expressions and are built using a small functional language that includes mathematical operations, boolean operations, external functions and literal values.
+
+When a rule body is instantiated using facts from the database, facts are picked at random. However,
+sometimes it is important to order facts by some argument because linearity imposes commitment when a rule is fired. The syntax for this construct is $[:op => X | ..., \emph{fact}(A, X), ...] \lolli B$. If $op$ is $min$, facts $\emph{fact}(A, X)$ are sorted in ascending order by $X$, therefore we first try the "smallest" $\emph{fact}$ before all others.
+
+The head of the rules contains \emph{fact templates} which derive new facts. The head can also have \emph{exist constructs}, \emph{comprehensions} and \emph{aggregates}. All those constructs may use all the variables instantiated in the body for their expressions.
+
+Exist constructs are based on the linear logic construct of the same name and are used to create new node addresses. Syntactically they are written as $exists \; A. (..., \emph{fact}(A, ...), ...)$, where $A$ is the new bound variable with type \emph{node}. This variable can then be used inside the exists scope to derive new facts.
+
+Comprehensions are sub-rules that are applied with all possible combinations using the facts from the database. Their syntax is the following: $\{X, ..., Z | A | B\}$, where $X, ..., Z$ are bound variables that are instantiated using the fact templates in $A$, $A$ is the body of the comprehension and $B$ is the head of the comprehension.
+
+Aggregates are a special kind of sub-rule that work very similarly to comprehensions. Their syntax is $[:op => T | X, ..., Z | A | B]$, where $A$ is the body of the aggregate, $X, ..., Z$ are the variables bound by the body, $op$ is the aggregate operation, $T$ is the aggregate variable and $B$ is the aggregate head. To compute the aggregate, we try all the combinations of $A$ using the database. Note that a different $T$ is instantiated for every combination. From all those $T$'s we pick one using $op$, this can be the minimum, maximum, sum, etc. After all the combinations, we fire $B$ once, with $T$ instantiated as the result of the aggregate operation.
+
+\subsection{Operational Semantics}
+
+Each rule in \lang has a defined priority that is inferred from its position in the source file. Rules at the beginning of the file have higher priority. We separate the database into two sets,
+the database itself, and the \emph{temporary store}. The temporary store are facts that have been
+derived or have been sent to the node but have not been considered in rule derivations. Every other fact is in the database.
+
+Operationally, node execution goes as following. We first consider all the facts in the
+temporary store and in the database and pick \emph{candidate rules} that may result in
+successful derivations. The candidate rules are then inserted into a priority queue ordered
+by the rule's priorities. We take the highest priority rule from the queue and then run it.
+If the derivation was successful, new facts may have been derived, thus we need to consider new
+rules that are candidates from the newly derived facts and add them to the rule's priority queue.
+On the other hand, when linear facts are consumed, some rules may not be applicable anymore and thus
+we may need to remove them from the priority queue. In our implementation,
+we keep a fact count for each predicate and also which predicates are needed for each rule. Whenever we have facts of some
+predicates we can efficiently check if new rules are applicable. We keep taking rules from the
+queue until the queue is empty. However, we do not check of rule constraints.
+
+Node execution can be performed at any time. This means that the programmer cannot expect
+that facts coming from other nodes will be considered as a whole or partially.
+Usually, it is preferable that rules are written as if rule order didn't matter, although
+rule order makes things easier for ordering local computation.
+
+We do a small optimization to reduce the number of derivations of persistent facts. We
+divide the program rules into two sets: \emph{persistent rules} and \emph{non persistent rules}.
+Persistent rules are rules where only persistent facts are involved. In such rules, we compile
+them incrementally, that is, when we get a new persistent fact we first attempt to fire
+all the persistent rules where this predicate is used in the body. This is called
+the \emph{pipelined semi-naive} evaluation and it originated in the P2 system~\cite{Loo-condie-garofalakis-p2}. This evaluation method avoids excessing re-derivations
+of the same fact. The order of derivation does not matter at all for those rules, since
+only persistent facts are used (the so called monotonicity property).

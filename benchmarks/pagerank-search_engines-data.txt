@@ -1,0 +1,10 @@
+pagerank-search_engines sl 133688 134256 134114 -> 134019
+pagerank-search_engines th1 134085 134430 134164 -> 134226
+pagerank-search_engines th2 87432 96626 126475 -> 103511
+pagerank-search_engines th4 38447 38281 38402 -> 38376
+pagerank-search_engines th6 25918 25750 25686 -> 25784
+pagerank-search_engines th8 20644 20966 21001 -> 20870
+pagerank-search_engines th10 17470 17512 17025 -> 17335
+pagerank-search_engines th12 13014 13043 12999 -> 13018
+pagerank-search_engines th14 11757 11844 11749 -> 11783
+pagerank-search_engines th16 10425 10196 10187 -> 10269

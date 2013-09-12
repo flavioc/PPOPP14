@@ -1,0 +1,16 @@
+
+new style wo/ work stealing:
+
+belief-propagation-200 th1 224284 240619 224123 -> 229675
+belief-propagation-200 th2 169786 168504 169920 -> 169403
+belief-propagation-200 th4 93244 87581 86576 -> 89133
+belief-propagation-200 th8 36393 36962 36069 -> 36474
+belief-propagation-200 th16 15048 16340 16200 -> 15862
+
+new style w/ work stealing:
+
+belief-propagation-200 th1 224284 240619 224123 -> 229675
+belief-propagation-200 th2 132300 131009 131500 -> 131603
+belief-propagation-200 th4 55110 57011 56020 -> 56047
+belief-propagation-200 th8 22178 22798 21570 -> 22182
+belief-propagation-200 th16 9444 9410 9526 -> 9460

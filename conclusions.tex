@@ -1,0 +1,22 @@
+
+We have present \lang, a linear logic programming language that can be used to solve real programming problems.
+The use of linear logic allows programs to have state which makes programs more expressive and efficient.
+This sound logical basis allows our language to be fully declarative and thus more amenable to proofs such as program correctness and termination.
+Since the program has state, different execution strategies will potentially give different outcomes and execution times. We have
+leveraged this fact to include coordination mechanisms that use same language constructs used for regular computation.
+Moreover, the graph based model of computation makes the language easy to distribute. In this paper, we have
+focused on multicores, however the language can be extended to many more architectures.
+
+We have implemented several programs that are concise, scalable and easy to prove than other competing implementations. Some of them, such as
+the SSSP, heat transfer and belief propagation using splash trees, use coordination mechanisms to improve their runtime. Some of these algorithms
+are called approximation algorithms and will sacrifice correctness for speed. However, not all programs can be so easily expressed
+to take advantage of the distributive nature of the language. For example, the quick-sort
+algorithm does not map immediately to the graph based model. Our solution considers an initial node with the list to be
+sorted, then the list is split in two using a pivot and two new nodes are created that will sort the sublists recursively. This shows that
+sometimes we need to see a problem in a different light in order to implement it.
+
+In the near future, we want to improve the scalability of our multicore implementation and extend the runtime to other architectures. Currently,
+we are testing a MPI version and a version that runs on clusters. In the long term, we want to leverage the logical foundations of our language
+to apply important optimizations. For example, some predicates act as node fields and logical rules only change the argument of such fields.
+Therefore, there is no need to delete the old fact and derive a new one, since updating the correct argument will have the same effect.
+There is plenty of other optimizations that can be done. Fortunately this will make our language competitive with other systems such as GraphLab.

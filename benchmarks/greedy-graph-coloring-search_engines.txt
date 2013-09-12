@@ -1,0 +1,20 @@
+new style wo/ work stealing:
+
+greedy-graph-coloring-search_engines th1 13740 13757 13713 -> 13736
+greedy-graph-coloring-search_engines th2 13666 13704 13712 -> 13694
+greedy-graph-coloring-search_engines th4 19271 19302 19322 -> 19298
+greedy-graph-coloring-search_engines th8 23250 23358 23356 -> 23321
+greedy-graph-coloring-search_engines th16 24028 24079 23832 -> 23979
+
+new style w/ work stealing:
+
+greedy-graph-coloring-search_engines sl 13801 13782 13823 -> 13802
+greedy-graph-coloring-search_engines th1 13681 13779 13664 -> 13708
+greedy-graph-coloring-search_engines th2 7660 7592 7542 -> 7598
+greedy-graph-coloring-search_engines th4 6052 6068 6056 -> 6058
+greedy-graph-coloring-search_engines th6 4241 4224 4277 -> 4247
+greedy-graph-coloring-search_engines th8 3982 3956 4040 -> 3992
+greedy-graph-coloring-search_engines th10 3426 3271 3486 -> 3394
+greedy-graph-coloring-search_engines th12 2777 2630 2806 -> 2737
+greedy-graph-coloring-search_engines th14 2646 2589 2546 -> 2593
+greedy-graph-coloring-search_engines th16 2280 2203 2219 -> 2234

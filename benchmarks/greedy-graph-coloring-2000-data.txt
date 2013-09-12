@@ -1,0 +1,10 @@
+greedy-graph-coloring-2000 sl 63474 63295 64142 -> 63637
+greedy-graph-coloring-2000 th1 60233 60698 60826 -> 60585
+greedy-graph-coloring-2000 th2 33590 33393 33419 -> 33467
+greedy-graph-coloring-2000 th4 17192 17315 17180 -> 17229
+greedy-graph-coloring-2000 th6 12130 12126 12098 -> 12118
+greedy-graph-coloring-2000 th8 9051 9036 9052 -> 9046
+greedy-graph-coloring-2000 th10 7448 7417 7435 -> 7433
+greedy-graph-coloring-2000 th12 6362 6346 6330 -> 6346
+greedy-graph-coloring-2000 th14 5419 5443 5410 -> 5424
+greedy-graph-coloring-2000 th16 4832 4793 4829 -> 4818

@@ -1,0 +1,10 @@
+shortest-freemans sl 591 591 590 -> 590
+shortest-freemans th1 597 597 594 -> 596
+shortest-freemans th2 394 416 414 -> 408
+shortest-freemans th4 245 245 216 -> 235
+shortest-freemans th6 165 179 181 -> 175
+shortest-freemans th8 167 166 151 -> 161
+shortest-freemans th10 157 145 142 -> 148
+shortest-freemans th12 145 144 139 -> 142
+shortest-freemans th14 132 124 114 -> 123
+shortest-freemans th16 106 115 114 -> 111

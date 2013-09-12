@@ -1,0 +1,10 @@
+greedy-graph-coloring-weather sl 5611 5615 5604 -> 5610
+greedy-graph-coloring-weather th1 5633 5663 5657 -> 5651
+greedy-graph-coloring-weather th2 2989 3011 2991 -> 2997
+greedy-graph-coloring-weather th4 1571 1571 1570 -> 1570
+greedy-graph-coloring-weather th6 1089 1091 1093 -> 1091
+greedy-graph-coloring-weather th8 826 830 827 -> 827
+greedy-graph-coloring-weather th10 682 694 698 -> 691
+greedy-graph-coloring-weather th12 595 598 600 -> 597
+greedy-graph-coloring-weather th14 533 530 531 -> 531
+greedy-graph-coloring-weather th16 499 495 505 -> 499

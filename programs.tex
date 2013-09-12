@@ -1,0 +1,257 @@
+In this section, we describe how some programs are implemented. We will present a graph algorithm
+(single source shortest path), a machine learning algorithm (splash belief propagation) and a logic puzzle (N queens).
+
+\subsection{Shortest Path}
+
+The Single Source Shortest Path (SSSP) is a graph algorithm where we want to compute the
+distance of all nodes to a single node. The full code is presented in Fig.~\ref{code:shortest_path_program}.
+The graph is represented using the \texttt{edge(A, B, W)} fact, where $A \rightarrow B$ is a directed edge
+from node $A$ to $B$ with distance $W$. Note that the axioms are not shown in the code. The second
+predicate is \texttt{path(A, D, F)}, where $D$ is the distance of node $A$ to our initial node and $F$
+is a flag indicating if this path has been processed (as explained below).
+
+Every node may have several \texttt{path} facts. From this set of facts, the node will select
+the path with the least distance (with rule 1 and 2) and then propagate it using the third rule.
+When a path is used for propagation, we make sure that the path flag is \texttt{notused}
+because we do not want to propagate the same distance twice. When the rule is fired, the flag
+then changes to \texttt{used}.
+
+We start with the axiom $\texttt{path(startnode, 0, notused)}$ (the distance to the starting node is 0).
+This will kickstart the computation by propagating the initial distance to the neighbor nodes using
+rule 3. We also use 2 coordination directives:
+
+\begin{itemize}
+   \item \texttt{priority @order asc}: paths are picked in ascending order.
+   \item \texttt{set-priority(B, float(D + W))}: to change the node's priority upon the computation of
+a new distance.
+\end{itemize}
+
+With these directives, we ensure that we pick the node with the smallest path distance
+first. If we are only using 1 thread, then our algorithm will behave like the Dijkstra's shortest
+path algorithm~\cite{Dijkstra}. When using more than 1 thread, each thread will pick the smallest
+path from a subset of nodes. This is the first example where using coordination directives will
+improve the speed of execution since we avoid propagating some of the paths.
+
+\begin{figure}[h!]
+\small\begin{verbatim}
+type route edge(node, node, int).
+type linear path(node, int, int).
+
+priority @order asc.
+
+const used = 1.
+const notused = 0.
+
+path(startnode, 0, notused).
+
+path(A, B, used), path(A, B, notused) -o path(A, B, used).
+
+path(A, B1, X), path(A, B2, Y), B1 <= B2 -o path(A, B1, X).
+
+path(A, D, notused)
+   -o {B, W | !edge(A, B, W) |
+         path(B, D + W, notused),
+         set-priority(B, float(D + W))},
+      path(A, D, used).
+\end{verbatim}
+  \caption{Shortest Path Program.}
+  \label{code:shortest_path_program}
+\end{figure}
+\normalsize
+
+\subsection{Splash Belief Propagation}
+
+Loopy Belief Propagation~\cite{Murphy99loopybelief} (LBP) is an approximate inference algorithm
+used in graphical models with cycles. In its essence LBP is a sum-product message passing algorithm
+where nodes exchange messages with their immediate neighbors and apply some computations to the messages
+received.
+
+LBP is an algorithm that maps very well to the \lang model. In its original form, we need to compute
+the belief of all nodes for several iterations and also synchronize after each iteration.
+However, it is still possible to apply
+some optimizations in order to take advantage of the fact that LBP will converge even when using
+an asynchronous approach. So, instead of computing the belief iteratively,
+we first keep track of all messages sent/received (and overwrite them when we receive a new one)
+and recompute the belief when we want, instead of synchronizing between nodes.
+This way, we can prioritize the computation of beliefs when
+a node changes significantly in terms of belief value. When that happens, we set the priority of its
+neighbors so that they can recompute their beliefs using important messages.
+
+The asynchronous approach proves to be a nice improvement over the synchronous version. Still, it
+is possible to do even better. Gonzalez et al~\cite{Gonzalez+al:aistats09paraml} developed an optimal
+algorithm to compute this algorithm by first building a tree and then updating the beliefs of each node twice, first from the leaves to the root and then from the root to the leaves. The root of this tree
+is the node with the highest priority (from the changes in belief) while the other nodes in the tree
+must have a non-zero priority. Note that the priorities are updated whenever a neighbor updates
+their belief. These splash trees are built iteratively until we reach convergence.
+
+The code in Fig.~\ref{code:sbp} presents the coordination component of the Belief Propagation problem.
+Please note that we just appended the code in Fig.~\ref{code:sbp} to a working but unoptimized version
+of the algorithm.
+In the coordination code have three sections:
+\begin{description}
+   \item[Tree building]: Each node has a \texttt{waiting} fact that is used to start the tree building process. When the highest priority is picked we create the token that will navigate through the tree. Note that in rule 4 we check if the priority of the new node to add to the tree is positive and that both nodes are in the same CPU. We want the tree to be kept in the same CPU.
+   \item[First phase]: In the third rule, when we reach a certain number of nodes in the tree, we generate \texttt{first-phase} in order to update the beliefs of all nodes in tree starting from the leaves and ending at the root. As we update the nodes, we generate \texttt{update} to update the belief values.
+   \item[Second phase]: In the second phase we go from the root to the leaves and update the beliefs a second time.
+\end{description}
+
+When we have several threads, every thread will generate their own trees by taking into account the highest priority node in their own queues. We do not use work stealing for this program because that would interfere with our coordination.
+
+\begin{figure}[h!]
+\small\begin{verbatim}
+// TREE BUILDING
+// continue tree
+waiting(A), token(A, All, Next) -o token(A, All, Next).
+// start tree
+waiting(A), @priority(A, A, P), P > 0.0
+   -o token(A, [A], [A]).
+// end tree building
+token(A, All, Next), length(All) > maxnodes
+   -o first-phase(A, All, reverse(All)).
+// expand tree
+token(A, All, [A | Next])
+   -o [collect => L | Side | !edge(A, L, Side),
+         0 = count(All, L),
+         0 = count(Next, L),
+         @priority(A, L, P), P > 0.0,
+         @cpu-id(A, L, Id1),
+         @cpu-id(A, A, Id2), Id1 = Id2 |
+         send-token(A, All, Next ++ L)].
+
+send-token(A, All, [])
+   -o first-phase(A, All, reverse(All)).
+send-token(A, All, [B | Next])
+   -o schedule-next(B),
+      token(B, All ++ [B], [B | Next]).
+
+// FIRST PHASE
+first-phase(A, [A], [A]) -o second-phase(A, [], A).
+first-phase(A, [A, B | Next], [A])
+   -o update(A), schedule-next(B),
+      second-phase(B, [B | Next], A).
+first-phase(A, All, [A, B | Next])
+   -o update(A), schedule-next(B),
+      first-phase(B, All, [B | Next]).
+
+// SECOND PHASE
+second-phase(A, [], _)
+   -o set-priority(A, 0.0), waiting(A), update(A).
+second-phase(A, [A], Back)
+   -o update(A), waiting(Back),
+      waiting(A), set-priority(A, 0.0).
+second-phase(A, [A, B | Next], Back)
+   -o update(A), waiting(Back), schedule-next(B),
+      second-phase(B, [B | Next], A).
+\end{verbatim}
+  \caption{Coordination code for the Splash Belief Propagation.}
+  \label{code:sbp}
+\end{figure}
+\normalsize
+
+%\begin{comment}
+\subsection{N Queens}
+
+The N queens~\cite{8queens} puzzle is the problem of placing N chess queens on an NxN chessboard so
+that no pair of two queens attack each other. The specific challenge of finding all the distinct
+solutions to this problem is a good benchmark in designing parallel algorithms.
+
+We will not show the algorithm in this paper due to the lack of space, but we will explain in general
+terms how we solve the problem in \lang. First, we consider each square of the chessboard as a node
+that can communicate with the adjacent left, right and bottom squares, but not top square.
+The states are represented as a list of integers, where each integer is the column number where
+the queen was placed. For example $[2, 0]$ means that a queen was placed in $(0, 0)$ and $(1, 2)$.
+
+An empty state is instantiated in the top-left node and is then propagated to all nodes in the same row.
+Every node will then check if a queen can be placed on the square. If true, each node will send the new
+state to the row below.
+Recursively, when a node receives a new state, it will (1) send the state to the left
+and to the right and (2) try to place the queen in its square. With this method,
+all states will be computed since we have facts for each valid state
+at that point. When a square cannot place a queen, that state is deleted.
+When the program ends, the states will be placed in the bottom row.
+
+We find our solution very elegant, since it can be easily executed in parallel and there are no
+wasted computations, because any distinct placement will be computed only once.
+
+\begin{comment}
+\begin{figure}[h!]
+\small\begin{verbatim}
+type left(node, node).
+type right(node, node).
+type down(node, node).
+type coord(node, int, int).
+type linear propagate-left(node, list node, list int).
+type linear propagate-right(node, list node, list int).
+type linear receive-down(node, list node, list int).
+type linear test-and-send-down(node, list node, list int).
+type linear test-y(node, int, list int, list node, list int).
+type linear test-diag-left(node, int, int, list int, list node, list int).
+type linear test-diag-right(node, int, int, list int, list node, list int).
+type linear send-down(node, list node, list int).
+type linear final-state(node, list node, list int).
+
+const size = 11.
+
+receive-down(@0, [], []).
+
+receive-down(A, Nodes, Coords)
+   -o {R | !right(A, R), R <> A | propagate-right(R, Nodes, Coords)},
+      {L | !left(A, L), L <> A | propagate-left(L, Nodes, Coords)},
+      test-and-send-down(A, Nodes, Coords).
+
+propagate-left(A, Nodes, Coords)
+   -o {L | !left(A, L), L <> A | propagate-left(L, Nodes, Coords)},
+      test-and-send-down(A, Nodes, Coords).
+
+propagate-right(A, Nodes, Coords)
+   -o {R | !right(A, R), R <> A | propagate-right(R, Nodes, Coords)},
+      test-and-send-down(A, Nodes, Coords).
+
+test-and-send-down(A, Nodes, Coords),
+!coord(A, X, Y)
+   -o test-y(A, Y, Coords, Nodes, Coords).
+
+test-y(A, Y, [], Nodes, Coords), !coord(A, OX, OY) -o test-diag-left(A, OX - 1, OY - 1, Coords, Nodes, Coords).
+test-y(A, Y, [X, Y1 | RestCoords], Nodes, Coords), Y = Y1 -o 1. // fail
+test-y(A, Y, [X, Y1 | RestCoords], Nodes, Coords), Y <> Y1 -o test-y(A, Y, RestCoords, Nodes, Coords).
+
+test-diag-left(A, X, Y, _, Nodes, Coords),
+X < 0 || Y < 0,
+!coord(A, OX, OY)
+   -o test-diag-right(A, OX - 1, OY + 1, Coords, Nodes, Coords).
+
+test-diag-left(A, X, Y, [X1, Y1 | RestCoords], Nodes, Coords),
+X = X1, Y = Y1
+   -o 1. // fail
+
+test-diag-left(A, X, Y, [X1, Y1 | RestCoords], Nodes, Coords),
+X <> X1 || Y <> Y1
+   -o test-diag-left(A, X - 1, Y - 1, RestCoords, Nodes, Coords).
+
+test-diag-right(A, X, Y, [], Nodes, Coords),
+X < 0 || Y >= size,
+!coord(A, OX, OY)
+   -o send-down(A, [A | Nodes], [OX, OY | Coords]).
+
+test-diag-right(A, X, Y, [X1, Y1 | RestCoords], Nodes, Coords),
+X = X1, Y = Y1
+   -o 1. // fail
+
+test-diag-right(A, X, Y, [X1, Y1 | RestCoords], Nodes, Coords),
+X <> X1 || Y <> Y1
+   -o test-diag-right(A, X - 1, Y + 1, RestCoords, Nodes, Coords).
+
+send-down(A, Nodes, Coords),
+!down(A, A)
+   -o final-state(A, Nodes, Coords).
+   
+send-down(A, Nodes, Coords),
+!down(A, B),
+A <> B
+   -o receive-down(B, Nodes, Coords).
+\end{verbatim}
+  \caption{Visit program.}
+  \label{code:visit}
+\end{figure}
+\normalsize
+%\end{comment}
+\end{comment}

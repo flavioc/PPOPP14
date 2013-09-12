@@ -1,0 +1,9 @@
+pagerank-sync-search_engines th1 307654 308214 308495 -> 308121
+pagerank-sync-search_engines th2 151594 121168 119486 -> 130749
+pagerank-sync-search_engines th4 90541 88441 87990 -> 88990
+pagerank-sync-search_engines th6 82006 80777 82293 -> 81692
+pagerank-sync-search_engines th8 83065 87055 82961 -> 84360
+pagerank-sync-search_engines th10 83908 84361 81463 -> 83244
+pagerank-sync-search_engines th12 87282 86748 90034 -> 88021
+pagerank-sync-search_engines th14 86039 84224 82465 -> 84242
+pagerank-sync-search_engines th16 87662 84419 92613 -> 88231

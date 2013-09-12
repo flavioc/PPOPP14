@@ -1,0 +1,62 @@
+The semantics of the \lang language make concurrency very easy to achieve.
+Nodes run sequentially and may send messages to other nodes through rule derivations. Nodes
+also need to wait for new messages in order for the program to progress.
+
+Meld, the inspiration for \lang, was
+implemented as an ensemble programming language, targeting modular robotic systems such as
+Claytronics~\cite{ashley-rollman-derosa-iros07wksp}. In such systems, there is a natural matching
+between computation and processors, since each robot is represented by a node. This distribution
+of data leaves little choice to be made in the division of computation to the various nodes.
+
+Our \lang system with multicores in mind has no natural matching of data and computation to processors/threads,
+since nodes are a program abstraction and part of the program's logic.
+We view the set of nodes as a graph data structure where threads will perform work.
+A thread is able to process any node, although a node cannot be computed by more than one thread
+at the same time. This disallows the manipulation of a node by multiple threads.
+
+\subsection{Coordination Directives}
+
+We use action facts to change the behavior of the runtime system. In particular, one can change the
+order in which nodes are evaluated by means of node priority. Node priority works at the thread level
+so that each thread can make a local decision about which node to run next. Without coordination,
+nodes can be picked up at any arbitrary order (we use a FIFO approach by default).
+
+The use of linear logic makes this possible and useful since the order in which nodes are executed
+may reduce the time needed to reach quiescence. When only using
+classical logic, no matter how computation is done, the end result will be the same since the program
+is strictly monotonic, since we only add new things during derivations. Randomized and approximation
+algorithms really benefit from coordination directives because although the final program results
+will not be exact, they are good enough and can be computed much faster.
+Examples of such programs are PageRank~\cite{Lubachevsky:1986:CAA:4904.4801} and
+Loopy Belief Propagation~\cite{Gonzalez+al:aistats09paraml}.
+
+The following list presents the action facts available to manipulate the priorities of nodes.
+
+\begin{description}
+   \item[\texttt{type linear action set-priority(node, float)}]: This sets the priority of a node. If the node has already some priority, we only change the priority if the new one is higher priority. The programmer can decide if priorities are to be ordered in ascending or descending order.
+   \item[\texttt{type linear action add-priority(node, float)}]: This gets the current node priority and increases or decreases it.
+   \item[\texttt{type linear action schedule-next(node)}]: The thread will fetch the highest priority node's priority $P$ and set the action's argument node's priority as $P + 1.0$.
+\end{description}
+
+When the highest priority node is picked up for execution, its priority is reset to 0. This means that
+the programmer must set the node's priority again if he wants to prioritize that node.
+
+We also provide a few coordination statements that are written after the predicate declarations:
+
+\begin{description}
+   \item[\texttt{priority @order ORDER.}] \texttt{ORDER} can be either \texttt{asc} or \texttt{desc}. This defines if node's are to selected by the smallest or the greatest priority, respectively.
+   \item[\texttt{priority @initial P.}] The \texttt{initial} statement informs the runtime system that all nodes must start with priority $P$. Alternatively, the programmer can define an \texttt{set-priority(A, P)} axiom.
+   \item[\texttt{priority @static.}] The \texttt{static} priority tells the runtime system that the node partition is to be used until the end of program and nodes cannot move between threads. This is useful when one needs to use \texttt{schedule-next}.
+   \item[\texttt{priority @cluster TYPE.}] Define what type of graph clustering to use. \texttt{TYPE} can be either \texttt{static}, \texttt{bfs} or \texttt{random}.
+\end{description}
+
+\subsection{Sensing Facts}
+
+Sensing facts provide information about node placement and node priority. We can use those facts
+to derive new coordination facts or used them in our program logic. \lang provides the following two
+sensing facts:
+
+\begin{description}
+   \item[\texttt{type linear cpu-id(node, node, int).}] The third argument indicates the thread's ID where the node of the second argument is currently running.
+   \item[\texttt{type linear priority(node, node, float).}] The third argument is the current priority of the node in the second argument.
+\end{description}

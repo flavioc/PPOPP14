@@ -1,0 +1,44 @@
+
+MELD_ARGS="0.001 0.01"
+
+old style wo/ work stealing:
+
+heat-transfer-80 th1 37741 36238 36142 -> 36707
+heat-transfer-80 th2 18596 18198 18050 -> 18281
+heat-transfer-80 th4 17226 17386 17489 -> 17367
+heat-transfer-80 th8 10435 10419 10517 -> 10457
+heat-transfer-80 th16 5254 5255 5270 -> 5259
+
+heat-transfer-80 thp1 22006 21513 21955 -> 21824
+heat-transfer-80 thp2 57360 55616 60955 -> 57977
+heat-transfer-80 thp4 55586 54616 56458 -> 55553
+
+new style wo/ work stealing:
+heat-transfer-80 sl 38474 38072 37957 -> 38167
+heat-transfer-80 th1 38669 38140 38546 -> 38451
+heat-transfer-80 th2 19353 19622 19300 -> 19425
+heat-transfer-80 th4 17535 17520 17959 -> 17671
+heat-transfer-80 th6 14487 14556 14668 -> 14570
+heat-transfer-80 th8 11317 11368 11354 -> 11346
+heat-transfer-80 th10 9197 9221 9110 -> 9176
+heat-transfer-80 th12 7694 7616 7661 -> 7657
+heat-transfer-80 th14 6465 6509 6540 -> 6504
+heat-transfer-80 th16 6066 6051 5968 -> 6028
+
+heat-transfer-80 thp1 21565 21522 21861 -> 21649
+heat-transfer-80 thp2 11050 11019 11044 -> 11037
+heat-transfer-80 thp4 9542 9565 9601 -> 9569
+heat-transfer-80 thp6 9625 9555 9705 -> 9628
+heat-transfer-80 thp8 7733 7727 7736 -> 7732
+heat-transfer-80 thp10 6293 6286 6188 -> 6255
+heat-transfer-80 thp12 5340 5372 5388 -> 5366
+heat-transfer-80 thp14 4705 4702 4735 -> 4714
+heat-transfer-80 thp16 4418 4380 4411 -> 4403
+
+new style w/ work stealing:
+heat-transfer-80 th1 38348 39204 38367 -> 38639
+heat-transfer-80 th2 19491 19523 19259 -> 19424
+heat-transfer-80 th4 18980
+problems XXX does not stop?
+
+XXX thp

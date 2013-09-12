@@ -1,0 +1,79 @@
+
+1: 83.3 83.3 83.8 -> 83.5
+2: 53.3 56.8 64.2 -> 58.1
+4: 19.5 18.7 19.7 -> 19.3
+6: 10.8 10.6 10.9 -> 10.8
+8: 7 7.6 6.8 -> 7.1
+10: 7.1 6.9 6.1 -> 6.7
+12: 5.7 5.1 5 -> 5.3
+14: 4.4 4.9 4.2 -> 4.5
+16: 5.1 4.6 4.7 -> 4.8
+
+speedup:
+1: 1
+2: 1.437
+4: 4.364
+6: 7.73
+8: 11.76
+
+1: 29.7 30.5 29.7 -> 29.97
+2: 15.3 15.7 15.7 -> 15.5
+4: 8.4 7.9 8.9 -> 8.4
+6: 5.5 5.2 5.5 -> 5.4
+8: 4.1 4.7 4.4 -> 4.4
+
+speedup:
+1: 1
+2: 1.934
+4: 3.568
+6: 5.5
+8: 6.81
+
+splash improv:
+1: 2.786
+2: 3.74
+4: 2.29
+6: 2
+8: 1.61
+
+belief-propagation-200 sl 347491 343934 343871 -> 345098
+belief-propagation-200 th1 349929 349857 348225 -> 349337
+belief-propagation-200 th2 219595 218145 218805 -> 218848
+belief-propagation-200 th4 105070 104769 105473 -> 105104
+belief-propagation-200 th6 78300 78774 78711 -> 78595
+belief-propagation-200 th8 45011 45030 44946 -> 44995
+belief-propagation-200 th10 29316 29068 29607 -> 29330
+belief-propagation-200 th12 29426 29391 29366 -> 29394
+belief-propagation-200 th14 24782 24645 24652 -> 24693
+belief-propagation-200 th16 19159 18936 18982 -> 19025
+
+belief-propagation-200 thp1 84730 84086 84620 -> 84478
+belief-propagation-200 thp2 56139 58179 58047 -> 57455
+belief-propagation-200 thp4 31211 32345 31767 -> 31774
+belief-propagation-200 thp6 18337 18218 18255 -> 18270
+belief-propagation-200 thp8 15423 14992 14462 -> 14959
+belief-propagation-200 thp10 15857 15557 15521 -> 15645
+belief-propagation-200 thp12 12154 12011 11680 -> 11948
+belief-propagation-200 thp14 11038 10743 10745 -> 10842
+belief-propagation-200 thp16 11261 11269 11221 -> 11250
+
+coord improv:
+1: 4.14
+2: 3.81
+4: 3.31
+6: 4.30
+8: 3.01
+10: 1.88
+12: 2.46
+14: 2.27
+
+sem workstealing:
+belief-propagation-200 th1 347688 348438 348845 -> 348323
+belief-propagation-200 th2 162653 162248 161605 -> 162168
+belief-propagation-200 th4 73332 74871 73096 -> 73766
+belief-propagation-200 th6 46530 47238 47492 -> 47086
+belief-propagation-200 th8 31593 31763 32009 -> 31788
+belief-propagation-200 th10 21142 21464 21393 -> 21333
+belief-propagation-200 th12 19026 18783 19008 -> 18939
+belief-propagation-200 th14 13650 13530 13439 -> 13539
+belief-propagation-200 th16 12082 12041 12221 -> 12114

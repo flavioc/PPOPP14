@@ -1,0 +1,72 @@
+
+The last decade has seen a priority shift for processor companies. If clock frequency
+was once the main metric for performance, today computing power is measured in number of
+cores in a single chip.
+For software developers and computer scientists, once focused in developing sequential programs,
+newer hardware usually meant faster programs without any change to the source code. Today,
+the free lunch is over. Multicore processors are now forcing the development of
+new software methodologies that take advantage of increasing processing power through parallelism.
+However, parallel programming is difficult, usually because programs are written
+in imperative and stateful programming languages that make use of low level synchronization
+primitives such as locks, mutexes and barriers. This tends to make the task of managing multithreaded
+execution quite intricate and error-prone, resulting in race hazards and deadlocks.
+In the future, \emph{many-core} processors will make this task look even more daunting.
+
+On the other hand, advances in network speed and bandwidth are making distributed computing
+more appealing. For instance, \emph{cloud computing} is a new emerging paradigm that wants
+to make every computer connected to the Internet as a client of a pool of computing power,
+where data can be retrieved and computation performed. From the perspective of high performance
+computing, the \emph{computer cluster} is a well established paradigm that uses fast local area
+networks to improve performance and solve problems that would take a long time with a single computer.
+
+Developments in parallel and distributed programming have given birth to several programming models.
+At the end of the spectrum are lower-level programming abstractions such as
+\emph{message passing} (e.g., MPI~\cite{gabriel04-open-mpi}) and \emph{shared memory}
+(e.g., Pthreads or OpenMP~\cite{Chapman-2007-UOP-1370966}).
+While such abstractions are very expressive and enable the programmer to write very performant code,
+they tend to be very hard to use and debug, due to synchronization problems, making it difficult to
+prove the program's correctness. On the other hand, we have many declarative programming models
+that can be run in parallel~\cite{Blelloch:1996:PPA:227234.227246} and tend to be easier to reason about.
+However, those systems offer little control to the programmer.
+
+We have designed a new declarative language called \lang (Linear Meld) that is based on the Meld language
+created by Ashley-Rollman et al~\cite{ashley-rollman-iclp09, ashley-rollman-derosa-iros07wksp}. Meld
+was designed to program massively distributed systems made of modular robots with a dynamic topology.
+The distribution of computation is done by first partitioning the program state across the robots
+and then making computation local to the node. Because Meld programs are sets of logical clauses, it
+is easier to prove the program's correctness than when using an imperative language.
+
+In this work, we are focused on running \lang programs in multicore machines.
+Instead of seeing the distributed system as a network of robots, we see it as a graph data structure,
+with several cores working on the nodes of the graph. With the new language, we want to increase its expressiveness and
+programmer control while still remaining declarative so that proofs about program correctness can be done easily.
+We next identify the three key contributions of our work that makes this possible:
+
+\begin{description}
+   \item[Linear Logic:] We use linear logic as the foundation of our language, so that program state can be encoded naturally.
+   Meld started as a classical logic programming language where everything that is derived is true until the end
+   of the execution. Linear logic turns logical facts into resources that will be consumed when a rule is applied.
+   We can leverage this sound logical foundation to prove many properties about our linear logic programs, including correctness and termination.
+   \item[Coordination:] We are using the concept of \emph{action facts} to coordinate the execution of programs.
+   We can increase the priority of certain computations during runtime according to the state
+   of the computation and to the state of the runtime so that programs finish faster.
+   For example, consider the shortest path program. We can pick the nodes with the shortest
+   distances to the source before the other nodes, so that shorter distances are propagated first.
+   We also use action facts to model output and to visualize the program's behavior in the interfaces
+   that we built.
+   \item[Implementation and programs] We have implemented a new compiler and a virtual machine from scratch that executes on multicore machines
+   \footnote{Source code is available at \url{Future Address}.}.
+   Several interesting programs were implemented such as belief propagation~\cite{Gonzalez+al:aistats09paraml},
+   belief propagation with residual splash~\cite{Gonzalez+al:aistats09paraml}, PageRank, graph coloring,
+   N queens, shortest path~\cite{Dijkstra}, diameter estimation, map reduce, game of life, quick-sort, neural network training, among others.
+\end{description}
+
+We believe that these new modifications make \lang a highly flexible and scalable language that can be implemented
+in many distributed architectures.
+
+The rest of the paper is organized as follows. In the next section, we provide an overview of related work, including
+programming languages and programming systems. In the third section, we describe our new language, including its foundations and syntax.
+Next, we present the basic execution model and how the coordination directives change the way the basic execution model works.
+In Section~\ref{sec:programs}, we show how some programs can be implemented in \lang and how they can run faster using coordination directives.
+Next, we validate our work with experimental results showing that \lang programs scale well and run faster when using coordination.
+Finally, we end the paper outlining some lessons, conclusions and future work.

@@ -1,0 +1,15 @@
+Parallel programs are known to be difficult to write and reason about. Proving that a parallel
+program is correct is made difficult by the constraints of imperative programming and the low
+level constructs that are available with such paradigms. Declarative
+programming is a step forward in the right direction but it tends to remove
+too much control from the programmer.
+We have designed a new declarative logic programming language that attempts to solve
+this problem. The foundation of our language is linear logic, a powerful logical system where logical
+facts can be removed, which allows writing programs that express state
+while still remaining declarative. When running a linear logic program, appropriate
+scheduling strategies may result in faster execution times, therefore we introduce
+logical rules that can guide the coordination of programs. The rules are written as regular rules,
+but make use of sensing and action facts to sense execution and coordinate, respectively.
+We have written graph algorithms, machine learning algorithms and several other programs and have
+seen good results on multicores, although our runtime system can be easily
+extended to other distributed architectures.
