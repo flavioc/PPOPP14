@@ -33,7 +33,7 @@ path from a subset of nodes. This is the first example where using coordination 
 improve the speed of execution since we avoid propagating some of the paths.
 
 \begin{figure}[h!]
-\small\begin{verbatim}
+\small\begin{Verbatim}[numbers=left]
 type route edge(node, node, int).
 type linear path(node, int, int).
 
@@ -53,7 +53,7 @@ path(A, D, notused)
          path(B, D + W, notused),
          set-priority(B, float(D + W))},
       path(A, D, used).
-\end{verbatim}
+\end{Verbatim}
   \caption{Shortest Path Program.}
   \label{code:shortest_path_program}
 \end{figure}
@@ -97,7 +97,7 @@ In the coordination code have three sections:
 When we have several threads, every thread will generate their own trees by taking into account the highest priority node in their own queues. We do not use work stealing for this program because that would interfere with our coordination.
 
 \begin{figure}[h!]
-\small\begin{verbatim}
+\small\begin{Verbatim}[numbers=left]
 // TREE BUILDING
 // continue tree
 waiting(A), token(A, All, Next) -o token(A, All, Next).
@@ -141,7 +141,7 @@ second-phase(A, [A], Back)
 second-phase(A, [A, B | Next], Back)
    -o update(A), waiting(Back), schedule-next(B),
       second-phase(B, [B | Next], A).
-\end{verbatim}
+\end{Verbatim}
   \caption{Coordination code for the Splash Belief Propagation.}
   \label{code:sbp}
 \end{figure}

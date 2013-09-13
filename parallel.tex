@@ -78,8 +78,3 @@ transform the linked list into a hash table in order to improve lookup.
 Each node uses a trie per predicate to store facts. During evaluation of rule bodies, we build a
 \emph{match object}, which matches some arguments of the target predicate to instantiated values, so
 that by searching the predicate trie from top to bottom, we can easily discard invalid trie branches.
-
-\subsection{Memory Allocator}
-
-Memory allocation is done using pools of memory objects local to each thread. This reduces contention in
-memory allocation.
