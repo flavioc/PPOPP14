@@ -40,5 +40,3 @@ heat-transfer-80 th1 38348 39204 38367 -> 38639
 heat-transfer-80 th2 19491 19523 19259 -> 19424
 heat-transfer-80 th4 18980
 problems XXX does not stop?
-
-XXX thp

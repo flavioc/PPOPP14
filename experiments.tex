@@ -120,7 +120,7 @@ for the US Power Grid dataset in Fig.~\ref{exp:sssp-uspowergrid} that compares a
 While the previous results were computed using only one thread, we also see good speedups with multiple threads. However, the gains reduce as we add
 more threads because the decision of picking the best path is done at the thread level, thus reducing the opportunities for optimization.
 
-For the belief propagation program, we have a noisy image made of 400x400 pixels that needs to be denoised.
+For the belief propagation (BP) program, we have a noisy image made of 400x400 pixels that needs to be denoised.
 To put our implementation to the test, we have also run the GraphLab (version 1) implementation of the same problem. The results are shown
 in Fig.~\ref{exp:splashbp}. The first plot presents the scalability results for the simple belief propagation problem. The GraphLab version
 uses the \textbf{fifo} scheduler that works identically to the basic \lang scheduler. While both versions show the same scalability pattern,
@@ -148,7 +148,36 @@ framework.
 
 \subsection{Memory footprint}
 
-TODO
+In Fig.~\ref{tbl:memory} we present statistics for the memory footprint of the virtual machine. The data was taken right after the computation was completed
+and it represents the memory allocated for holding the program, including facts and other auxiliary data structures.
+
+\begin{table}[ht]
+\begin{center}
+      \resizebox{8.5cm}{!}{
+    \begin{tabular}{| l | c | c | c | c | }
+    \hline
+    \textbf{Program} & \textbf{\# Nodes} & \textbf{\# Facts} & \textbf{Memory (MB)} & \textbf{Average (KB)} \\ \hline \hline
+    N Queens & 121 & 3164 & 12.13 MB & 102.62 KB \\ \hline
+    G. Graph Coloring web & 11659 & 1179671 & 293.06 MB & 25.74 KB \\ \hline
+    %G. Graph Coloring weather & 8011 & 144927 & 43.78 MB & 5.60 KB \\ \hline
+    PageRank web & 11659 & 1215580 & 309.78 MB & 27.20 KB \\ \hline
+    %PageRank movie & 7967 & 147124 & 51.17 MB \\ \hline
+    Heat transfer & 6400 & 44480 & 55.82 MB & 8.93 KB \\ \hline
+    SSSP US Airports & 500 & 55960 & 16.87 MB & 34.54 KB \\ \hline
+    %SSSP US Power Grid & 4941 & 502347 & 159.27 MB \\ \hline
+    %BP & 160000 & 2395200 & 4408.48 MB \\ \hline
+    Splash BP & 160000 & 2555200 & 2540.96 MB & 16.26 KB \\ \hline
+    \end{tabular}}
+\end{center}
+     \caption{Memory usage of programs.}
+     \label{tbl:memory}
+\end{table}
+
+In the \textbf{Average (KB)} column, we included the average memory used by a node computed by computing \textbf{Memory (MB)} / \textbf{\# Nodes}.
+We note that, for the N Queens program, the average memory is quite high due the number of solutions (2680).
+Surprisingly, the Splash BP program shows a low average memory usage even when taking into account the high number of lists used by the program
+to store the belief values. In the future, we intend to bring these numbers down by optimizing the code, better fact storage and more efficient
+data structures.
 
 \subsection{Language expressiveness and conciseness}
 

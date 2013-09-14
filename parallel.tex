@@ -57,6 +57,8 @@ In Fig.~\ref{fig:node} we present the node data structure and its fields. We sum
    \item[lock]: A \texttt{Lock} mutex used to manipulate the node.
 \end{description}
 
+The node data structure with an empty database occupies around 150 bytes.
+
 \subsection{Work Stealing}
 
 When a thread runs out of nodes to process, it will pick a thread at random and try to steal one node
