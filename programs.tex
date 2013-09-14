@@ -1,5 +1,8 @@
-In this section, we describe how some programs are implemented. We will present a graph algorithm
+We now describe how some programs are implemented in \lang.
+\begin{comment}
+We will present a graph algorithm
 (single source shortest path), a machine learning algorithm (splash belief propagation) and a logic puzzle (N queens).
+\end{comment}
 
 \subsection{Shortest Path}
 
@@ -8,7 +11,7 @@ distance of all nodes to a single node. The full code is presented in Fig.~\ref{
 The graph is represented using the \texttt{edge(A, B, W)} predicate (line 1), where $A \rightarrow B$ is a directed edge
 from node $A$ to $B$ with distance $W$. The second
 predicate is \texttt{path(A, D, F)} (line 2), where $D$ is the distance of node $A$ to our initial node and $F$
-is a flag indicating if this path has been processed (as explained below).
+indicates if this path has been processed.
 
 Every node may have several \texttt{path} facts. From this set of facts, the node will select
 the path with the least distance (with rule 1 and 2 in lines 11-13) and then propagate it using the third rule (lines 15-19).

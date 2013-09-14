@@ -38,13 +38,14 @@ Each node also contains flags that will tell in which queue they are currently i
 
 \begin{figure}[h!]
      \centering
-   \resizebox{8cm}{!}{
+   \resizebox{6cm}{!}{
 
     \includegraphics[width=0.5\textwidth]{node.pdf}}
     \caption{The node data structure.}
     \label{fig:node}
 \end{figure}
 
+The node data structure with an empty database occupies around 150 bytes.
 In Fig.~\ref{fig:node} we present the node data structure and its fields. We summarize the data below:
 
 \begin{description}
@@ -56,8 +57,6 @@ In Fig.~\ref{fig:node} we present the node data structure and its fields. We sum
    \item[owner]: Pointer to the owner thread. \texttt{Owner} in the figure.
    \item[lock]: A \texttt{Lock} mutex used to manipulate the node.
 \end{description}
-
-The node data structure with an empty database occupies around 150 bytes.
 
 \subsection{Work Stealing}
 

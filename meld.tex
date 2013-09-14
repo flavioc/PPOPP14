@@ -129,8 +129,8 @@ also in the head when instantiating facts. Constraints are boolean expressions t
 be true in order for the rule to be fired. Constraints use variables from fact expressions and are built using a small functional language that includes mathematical operations, boolean operations, external functions and literal values.
 
 When a rule body is instantiated using facts from the database, facts are picked non-deterministically.
-While our system uses an implementation dependent for efficiency reasons,
-sometimes it is important to order facts by one of the arguments because linearity imposes commitment when a rule is fired. The syntax for this construct is $[:op => X | ..., \emph{fact}(A, X), ...] \lolli B$. If $op$ is $min$, facts $\emph{fact}(A, X)$ are used in ascending order (by $X$) to prove the rule. Other operations available are: $max$ and $random$ (to force randomization).
+While our system uses an implementation dependent order for efficiency reasons,
+sometimes it is important to sort facts by one of the arguments because linearity imposes commitment during rule activation. The syntax for this construct is $[:op => X | ..., \emph{fact}(A, X), ...] \lolli B$. If $op$ is $min$, facts $\emph{fact}(A, X)$ are used in ascending order (by $X$) to prove the rule. Other operations available are $max$ and $random$.
 
 The head of a rule contains \emph{fact templates} which are uninstantiated facts and will derive new facts. The head can also have \emph{exist constructs}, \emph{comprehensions} and \emph{aggregates}. All those constructs may use all the variables instantiated in the body.
 

@@ -17,22 +17,24 @@ For the parallel results, we run each program using 1, 2, 4, 6, 8, 10, 12, 14 an
    \item[N queens]: Already explained before. We use an 11x11 board.
 \end{description}
 
-In Fig.~\ref{exp:graph_coloring} we present the speedup results for the graph coloring program. In the first plot, we show the speedup for a graph of 12000 webpages (using links as undirected edges). Since this dataset follows the power law, that is, there is a small number of pages with a lots of links (1\% of the nodes have 75\% of the edges), the speedup is not as good as the one shown when using a random dataset of 2000 nodes, where each node has more or less the same number of links. In the the weather web graph 20\% of the nodes have 75\% of the edges, which less than the search engine dataset, and it shows in the results.
+In Fig.~\ref{exp:graph_coloring} we present the speedup results for the graph coloring program. In the first plot, we show the speedup for a graph of 12000 webpages. Since this dataset follows the power law, that is, there is a small number of pages with a lots of links (1\% of the nodes have 75\% of the edges), the speedup is not as good as the one shown when using a random dataset of 2000 nodes, where each node has more or less the same number of links. In the weather web graph 20\% of the nodes have 75\% of the edges, much less than the search engine dataset, and it shows in the results.
+
+\newcommand{\figsize}[0]{5cm}
 
 \begin{figure*}[htp]
    \centering
-   \resizebox{5cm}{!}{\subfigure[Using a search engine web graph (almost 12000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_greedy-graph-coloring-search_engines.pdf}}}
-   \resizebox{5cm}{!}{\subfigure[Using a weather web graph (around 8000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_greedy-graph-coloring-weather.pdf}}}
-   \resizebox{5cm}{!}{\subfigure[Using a random graph (with 2000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_greedy-graph-coloring-2000.pdf}}}
+   \resizebox{\figsize}{!}{\subfigure[Using a search engine web graph (almost 12000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_greedy-graph-coloring-search_engines.pdf}}}
+   \resizebox{\figsize}{!}{\subfigure[Using a weather web graph (around 8000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_greedy-graph-coloring-weather.pdf}}}
+   \resizebox{\figsize}{!}{\subfigure[Using a random graph (with 2000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_greedy-graph-coloring-2000.pdf}}}
    \caption{Experimental results for the greedy graph coloring algorithm.}
    \label{exp:graph_coloring}
 \end{figure*}
 
 \begin{figure*}[htp]
    \centering
-   \resizebox{5cm}{!}{\subfigure[Using a search engine web graph (almost 12000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_pagerank-search_engines.pdf}}}
-   \resizebox{5cm}{!}{\subfigure[Using a movie web graph (almost 8000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_pagerank-movies.pdf}}}
-   \resizebox{5cm}{!}{\subfigure[Using a random, dense graph (500 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_pagerank-500.pdf}}}
+   \resizebox{\figsize}{!}{\subfigure[Using a search engine web graph (almost 12000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_pagerank-search_engines.pdf}}}
+   \resizebox{\figsize}{!}{\subfigure[Using a movie web graph (almost 8000 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_pagerank-movies.pdf}}}
+   \resizebox{\figsize}{!}{\subfigure[Using a random, dense graph (500 nodes)]{\includegraphics[width=0.5\textwidth]{speedup_pagerank-500.pdf}}}
    \caption{Experimental results for the asynchronous PageRank algorithm.}
    \label{exp:pagerank}
 \end{figure*}
@@ -43,7 +45,7 @@ available parallelism, resulting in linear scalability.
 
 \begin{figure}[h!]
      \centering
-   \resizebox{5cm}{!}{
+   \resizebox{\figsize}{!}{
 
     \includegraphics[width=0.5\textwidth]{speedup_8queens-11.pdf}}
     \caption{Experimental results for the N queens program (11x11~board).}
@@ -74,7 +76,7 @@ version without priorities.
 
 \begin{figure}[h!]
      \centering
-   \resizebox{5cm}{!}{
+   \resizebox{\figsize}{!}{
    \includegraphics[width=0.5\textwidth]{speedup_heat-transfer-80.pdf}}
    \caption{Experimental results for the heat transfer program.}
    \label{exp:heat-transfer}
@@ -111,7 +113,7 @@ for the US Power Grid dataset in Fig.~\ref{exp:sssp-uspowergrid} that compares a
 
 \begin{figure}[h!]
      \centering
-   \resizebox{5cm}{!}{
+   \resizebox{\figsize}{!}{
    \includegraphics[width=0.5\textwidth]{speedup_uspowergrid.pdf}}
    \caption{Experimental results for the SSSP program with the US Power Grid dataset when using coordination.}
    \label{exp:sssp-uspowergrid}
@@ -137,10 +139,9 @@ uses the \textbf{fifo} scheduler that works identically to the basic \lang sched
 \end{figure*}
 
 The plot in Fig.~\ref{exp:splashbp}~(b) shows the scalability of the coordinated version. For GraphLab we used the \textbf{splash} scheduler, while \lang
-runs with the extra coordination rules. Again, the scalability lines are very similar. Still, GraphLab appears to be slightly more scalable.
-
+runs with the extra coordination rules. Again, the scalability lines are very similar, but GraphLab appears to be slightly more scalable.
 Finally, the last plot (Fig.~\ref{exp:splashbp}~(c)) presents the improvements of the coordinated version over the basic version when using a different
-number of threads. We can see that adding more threads tends to reduce the effectiveness of adding splash trees in both implementations.
+number of threads. We can see that adding more threads tends to reduce the effectiveness of splash trees in both systems.
 
 The previous results validate our thesis that applying algorithm dependent scheduling strategies will make execution faster. By using a small set
 of action facts and derivation rules we were able to implement complex scheduling strategies present in GraphLab, a practical and powerful machine learning
@@ -149,7 +150,7 @@ framework.
 \subsection{Memory footprint}
 
 In Fig.~\ref{tbl:memory} we present statistics for the memory footprint of the virtual machine. The data was taken right after the computation was completed
-and it represents the memory allocated for holding the program, including facts and other auxiliary data structures.
+and it represents the memory allocated at that point, including facts and other auxiliary data structures.
 
 \begin{table}[ht]
 \begin{center}
