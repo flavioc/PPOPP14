@@ -12,7 +12,7 @@ primitives such as locks, mutexes and barriers. This tends to make the task of m
 execution quite intricate and error-prone, resulting in race hazards and deadlocks.
 In the future, \emph{many-core} processors will make this task look even more daunting.
 
-On the other hand, advances in network speed and bandwidth are making distributed computing
+Advances in network speed and bandwidth are making distributed computing
 more appealing. For instance, \emph{cloud computing} is a new emerging paradigm that wants
 to make every computer connected to the Internet as a client of a pool of computing power,
 where data can be retrieved and computation performed. From the perspective of high performance
@@ -66,7 +66,8 @@ on different architectures.
 
 The rest of the paper is organized as follows. In the next section, we provide an overview of related work, including
 programming languages and programming systems. In the third section, we describe \lang, including its foundations and syntax.
-Next, we present the basic execution model and how the coordination directives change the way the basic execution model works.
-In Section~\ref{sec:programs}, we show how some programs can be implemented in \lang and how they can run faster using coordination directives.
+Next, we present the basic execution model and how coordination directives can be added to change the way the basic execution model works.
+In Section~\ref{sec:programs}, we show how some programs can be implemented in \lang and how custom scheduling strategies
+can improve execution time.
 Next, we validate our work with experimental results showing that \lang programs scale well and run faster when using coordination.
 Finally, we end the paper outlining some lessons, conclusions and future work.

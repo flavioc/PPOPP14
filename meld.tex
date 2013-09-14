@@ -3,20 +3,33 @@ This process is repeated until we reach \emph{quiescence}, that is, when we can 
 
 Each fact is an association between a \emph{predicate} and a tuple of values. A predicate is a pair with a name and a tuple of types (the argument types). \lang rules are type-checked using the predicate declarations in the header of the program. \lang has a simple type system that includes the following types: \emph{node}, \emph{int}, \emph{float}, \emph{string}, \emph{bool} and \emph{list X}, where \emph{X} is any of the previous 5 types.
 
-Every derivation rule can be decomposed into one \emph{body} and one \emph{head}. The body contains the pre-requisites needed (including facts and constraints) to derive the expression in the head. Rules without bodies are allowed (they are the axioms) and rules without heads are also allowed.
+Every derivation rule can be decomposed into one \emph{body} and one \emph{head}.
+The body contains the prerequisites needed (including facts and constraints) to derive the expression in the head.
+An example of a rule can be seen in line 11 in Fig.~\ref{code:visit}.
+The body of this rule is \texttt{visit(A), visited(A)} and the head is \texttt{visited(A)}.
+Rules without bodies are allowed in \lang and they are called axioms (line 15 in Fig.~\ref{code:visit}). Rules without heads are also allowed.
 
 \subsection{Distribution}
 
-The first argument of every predicate must be typed as a \emph{node}. The node represents the location of some node in the \emph{graph structure}. Essentially, a program can be seen as a graph where nodes are concurrently doing simple sequential computations with some message exchanges with other nodes. The structure of this graph is defined through a special class of facts called \emph{structural facts}. These structural facts define communication paths between nodes.
+The first argument of every predicate must be typed as a \emph{node}. The node represents the location of some node in the \emph{graph structure}.
+Essentially, a program can be seen as a graph data structure where processors apply computation at the node level of the graph. Computation is
+parallelized by processing many nodes concurrently. The edges of this graph are defined through a special class of facts called \emph{structural facts}
+and allow transmission of facts between the nodes of the graph.
 
-For distribution and data partitioning purposes, derivation rules are constrained by the expressions that can be written in the body. The body of every rule can only refer to facts in the same node.
-However, the expressions in the head may refer to other nodes, as long as those nodes are instantiated in the body of the rule. The database of the program can then be partitioned by the first argument of each fact. This is possible since the rules of the program only make use of facts from a single node.
+For distribution and data partitioning purposes, derivation rules are constrained by the expressions that can be written in the body.
+The body of every rule can only refer to facts in the same node.
+However, the expressions in the head may refer to other nodes, as long as those nodes are instantiated in the body of the rule.
+The database of the program is then partitioned by the first argument of each fact. This is possible since the rules of the
+program only make use of facts from a single node. The facts of each node represent both the state of the computation and data.
+We drew some inspiration from the Linda system~\cite{1663305}, where the tuple space contains the data and is used by the processors
+to communicate and do computation.
+This differs greatly from imperative languages, since in those languages data and computation are two separate entities.
 
 \subsection{Linearity}
 
 Another big departure from Datalog-like languages is the use of linear logic~\cite{Girard95logic:its}. Traditional forward-chaining logic programming languages make only use of classical logic, in which derived facts are true forever. Many ad-hoc extensions~\cite{Liu98extendingdatalog,Ludascher95alogical} have been devised in the past to support state updates in Datalog, but most are extra-logical which makes it harder to reason about programs.
 
-With linear logic, we define two classes of facts: \emph{persistent facts} and \emph{linear facts}. Persistent facts, once derived, are true until the end of execution and work as in classical logic. Linear facts are true temporarily. When linear facts are used in a derivation, they are deleted from the database. This allows programs to transparently express state updates while keeping the full benefits of classical logic.
+With linear logic, we define two classes of facts: \emph{persistent facts} and \emph{linear facts}. Persistent facts, once derived, are true until the end of execution and work as in classical logic. Linear facts are seen as resources and when used in a derivation, they are deleted. This allows programs to transparently express state updates while keeping the full benefits of classical logic.
 
 We use a small subset of the original linear logic proof system with some extensions to improve
 the expressiveness of the language. We summarize the connectives used in Table~\ref{table:linear}.
@@ -99,8 +112,12 @@ in the user interface. For example, when we want to change the color of nodes or
 of edges, we just derive a new action fact and the action is performed in the interface.
 Another use of action facts is to change the order things are evaluated in the runtime system.
 It is possible to give hints to the virtual machine in order to prioritize the computation of
-some nodes. This is called \emph{coordination}.
+some nodes.
 Action facts are linear facts which are consumed when the corresponding action is performed.
+
+With sensing facts and action facts, we can write "meta-rules" that will sense the state of the runtime system
+and then apply decisions in order to improve execution speed. In some situations, such set of rules can be
+added to the program without any modifications to the original program.
 
 \subsection{Rules}
 
@@ -115,7 +132,7 @@ When a rule body is instantiated using facts from the database, facts are picked
 While our system uses an implementation dependent for efficiency reasons,
 sometimes it is important to order facts by one of the arguments because linearity imposes commitment when a rule is fired. The syntax for this construct is $[:op => X | ..., \emph{fact}(A, X), ...] \lolli B$. If $op$ is $min$, facts $\emph{fact}(A, X)$ are used in ascending order (by $X$) to prove the rule. Other operations available are: $max$ and $random$ (to force randomization).
 
-The head of a rule contains \emph{fact templates} which are uninstantiated facts and will derive new facts. The head can also have \emph{exist constructs}, \emph{comprehensions} and \emph{aggregates}. All those constructs may use all the variables instantiated in the body for their expressions.
+The head of a rule contains \emph{fact templates} which are uninstantiated facts and will derive new facts. The head can also have \emph{exist constructs}, \emph{comprehensions} and \emph{aggregates}. All those constructs may use all the variables instantiated in the body.
 
 Exist constructs are based on the linear logic construct of the same name and are used to create new node addresses. Syntactically they are written as $exists \; A. (..., \emph{fact}(A, ...), ...)$, where $A$ is the new bound variable with type \emph{node}. This variable can then be used inside the exists scope to derive new facts.
 
@@ -153,5 +170,5 @@ Persistent rules are rules where only persistent facts are involved. In such rul
 them incrementally, that is, when we get a new persistent fact we first attempt to fire
 all the persistent rules where this predicate is used in the body. This is called
 the \emph{pipelined semi-naive} evaluation and it originated in the P2 system~\cite{Loo-condie-garofalakis-p2}. This evaluation method avoids excessing re-derivations
-of the same fact. The order of derivation does not matter at all for those rules, since
-only persistent facts are used (the so called monotonicity property).
+of the same fact. The order of derivation does not matter for those rules, since
+only persistent facts are used.

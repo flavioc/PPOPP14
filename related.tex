@@ -1,7 +1,7 @@
 
 Many programming models have been developed in order to make parallel programs both easier to write and reason about. 
 Declarative programming paradigms move away from the pitfalls of imperative programming and transfer the problem of parallelizing
-the program to the runtime system. Famous examples of such paradigms are \emph{logic programming} and \emph{functional programming}.
+the program to the compiler and runtime system. Famous examples of such paradigms are \emph{logic programming} and \emph{functional programming}.
 In logic languages such as Prolog, researchers took advantage of the non-determinism of proof-search to evaluate subgoals
 in parallel with models such as \emph{or-parallelism}~\cite{ali-86} and \emph{and-parallelism}~\cite{Shen-92}.
 In functional languages, the stateless nature of computation allows multiple expressions to evaluate safely in parallel.
@@ -13,7 +13,7 @@ model that is optimized for large clusters. The scheduling and data sharing mode
 in the \emph{map phase}, data is transformed at each node and the result reduced to a final
 result in the \emph{reduce phase}.
 
-A declarative approach that is becoming popular is Datalog~\cite{Ullman:1990:PDK:533142}, a
+A declarative approach that is regaining popularity is Datalog~\cite{Ullman:1990:PDK:533142}, a
 bottom-up logic programming language.
 Traditionally used in deductive databases, Datalog is being increasingly used in different fields
 such as distributed networking~\cite{Loo-condie-garofalakis-p2}, sensor
@@ -28,7 +28,7 @@ are sequential, with no locking required. Dryad is design to scale in number of 
 The Pregel system~\cite{Malewicz:2010:PSL:1807167.1807184} is also graph based, although programs have a more strict
 structure. They must be represented as a sequence of iterations where each iteration is composed of computation and message passing.
 Pregel is specially suited for solving very large graphs
-and is also intended to scale to large architectures. Pregel programs are easy to prove due to their simplicity.
+and is also intended to scale to large architectures.
 
 GraphLab~\cite{GraphLab2010} is a C++ framework for developing parallel machine learning algorithms. While
 Pregel uses message passing, GraphLab allows nodes to have read/write access to different scopes through different concurrent access models in order to balance performance and data consistency. While some programs only need to access the local node's data, others may need to update edge information. Each consistency model will provide different guarantees that are better adapted to some algorithms. GraphLab also provides different schedulers that dictate the order in which node's are computed. Later in this paper, we will show how certain GraphLab's schedulers can be easily implemented in \lang through the use of coordination facts.

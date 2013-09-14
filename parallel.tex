@@ -1,5 +1,5 @@
 
-We developed a compiler (written in Common Lisp) and a virtual machine (written in C++) that runs
+We developed a compiler and a virtual machine that runs
 byte-code. The virtual machine makes use of the pthreads library to parallelize execution.
 
 \subsection{Overview}
@@ -14,8 +14,7 @@ As a first step, all threads will grab their nodes and assign the \texttt{owner}
 Because only one thread is allowed to do computation on the node at any giving time, this node's property
 defines the thread with such permissions.
 Next, we fill up the \emph{work queue} with the nodes we have picked. This queue
-maintains the nodes that have new facts that need to be processed. Please note that at the program start
-there is a special fact that derives the node's axioms.
+maintains the nodes that have new facts that need to be processed.
 
 When a node sends a fact to another node, we need to check if the target node is not in the work queue of the owner thread.
 If both nodes are in different threads, then we have a point of synchronization. At some point,
@@ -28,13 +27,12 @@ the global flag, they will detect that it is idle and then exit the program.
 \subsection{Threads}
 
 The work queue is actually implemented as two queues. First, there's one double-linked list for nodes
-without priority called the \emph{normal queue}.
+with priority equal to 0 called the \emph{normal queue}.
 We use a double-linked list because it will be easier to move the node from this queue to the
 \emph{priority queue}. The priority queue is an array based binary heap data structure that contains
-all the unprocessed nodes with priority. Note that all those data structures are intrusive: all data
-fields used in the queues are part of the node data structure such as the \texttt{next} and \texttt{prev}
-fields of the normal queue. Each node also contains flags that will tell in which queue they are currently
-in and if they have facts to process.
+all the unprocessed nodes with priority. To reduce the memory footprint of our queues, all the bookkeeping fields
+such as the \texttt{next} and \texttt{prev} are part of the node data structure.
+Each node also contains flags that will tell in which queue they are currently in and if they have facts to process.
 
 \subsection{Nodes}
 
@@ -50,9 +48,9 @@ in and if they have facts to process.
 In Fig.~\ref{fig:node} we present the node data structure and its fields. We summarize the data below:
 
 \begin{description}
-   \item[queue intrusive data]: Includes the field \texttt{Prev} (for the normal queue), \texttt{Next} (for the normal queue), \texttt{Prio} (priority) and \texttt{Queue Pos} (for the priority queue).
+   \item[queue data]: Includes the field \texttt{Prev} (for the normal queue), \texttt{Next} (for the normal queue), \texttt{Prio} (priority) and \texttt{Queue Pos} (for the priority queue).
    \item[flags]: If the node is currently in the queue and in which queue. Includes \texttt{In Queue}, \texttt{In Normal Queue} and \texttt{In Priority Queue}.
-   \item[fact queue]: A simple linked-list containing the unprocessed facts called \texttt{New Facts}.
+   \item[temporary store]: A simple linked-list containing the unprocessed facts called \texttt{Temporary Store}.
    \item[database]: All the facts already processed and are true for this node. Is implemented as a trie and it is called \texttt{Tries}.
    \item[rule matcher]: The \texttt{Matcher} maintains the number of facts per predicate and which rules can be activated next. This is used for selecting the candidate rules.
    \item[owner]: Pointer to the owner thread. \texttt{Owner} in the figure.
@@ -66,7 +64,7 @@ from the target thread. The stealer thread will pop a node from either the prior
 node is stolen, its owner information also changes to the stealer thread.
 
 It is important to note that whenever a node sends a coordination action fact to a node in another thread, the fact is ignored, due to the costs of sending
-coordination data between threads.
+coordination data between threads. We intend to design an efficient mechanism to solve this problem.
 
 \subsection{Database}
 

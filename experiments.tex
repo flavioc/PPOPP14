@@ -17,7 +17,7 @@ For the parallel results, we run each program using 1, 2, 4, 6, 8, 10, 12, 14 an
    \item[N queens]: Already explained before. We use an 11x11 board.
 \end{description}
 
-In Fig.~\ref{exp:graph_coloring} we present the speedup results for the graph coloring program. In the first plot, we show the speedup for a graph of almost 12000 webpages (using links as undirected edges). Since this dataset follows the power law, that is, there is a small number of pages with a lots of links (1\% of the nodes have 75\% of the edges), the speedup is not as good as the one shown when using a random dataset of 2000 nodes, where each node has more or less the same number of links. In the the weather web graph 20\% of the nodes have 75\% of the edges, which less than the search engine dataset, and it shows in the results.
+In Fig.~\ref{exp:graph_coloring} we present the speedup results for the graph coloring program. In the first plot, we show the speedup for a graph of 12000 webpages (using links as undirected edges). Since this dataset follows the power law, that is, there is a small number of pages with a lots of links (1\% of the nodes have 75\% of the edges), the speedup is not as good as the one shown when using a random dataset of 2000 nodes, where each node has more or less the same number of links. In the the weather web graph 20\% of the nodes have 75\% of the edges, which less than the search engine dataset, and it shows in the results.
 
 \begin{figure*}[htp]
    \centering
@@ -50,10 +50,7 @@ available parallelism, resulting in linear scalability.
     \label{exp:8queens}
 \end{figure}
 
-The results for the N queens program are shown in Fig.~\ref{exp:8queens}. This program is much less regular than the other two, since computation starts at the top of the grid and then rolls down, until only the last row is doing computation. Note that as the computation goes from row to row, the number of states increase, creating even more imbalances. To see how important work stealing is, we also included the results of the execution without work stealing (\textbf{NO~WS}).
-
-The previous results show that our runtime can successfully scale very regular programs (like PageRank) or more irregular programs like N Queens. Our basic
-scheduling strategy using work stealing is powerful enough to give good results.
+The results for the N queens program are shown in Fig.~\ref{exp:8queens}. This program is much less regular than the other two, since computation starts at the top of the grid and then rolls down, until only the last row is doing computation. Note that as the computation goes from row to row, the number of states increase, creating even more imbalances. This shows that our system is able to scale well with more traditional algorithms such as N Queens.
 
 \subsection{Coordination Experiments}
 
@@ -67,8 +64,8 @@ To do this, we are using the following 3 programs:
 \end{description}
 
 Fig.~\ref{exp:heat-transfer} shows the results for the heat transfer program. \textbf{Threads} represents the speedup of the multicore execution
-without coordination when compared to a sequential execution, while \textbf{Coord} represents the speedup when using coordination directives. The
-\textbf{Improve} line represents the improvement of coordination over regular execution and is computed as $\mathbf{Threads} / \mathbf{Coord}$.
+without coordination, while \textbf{Coord} represents the speedup when using coordination directives.
+Both execution modes were compared against the sequential execution without coordination.
 When using one thread, the coordinated version is almost 2 times
 faster, however this speedup is slightly reduced as more threads are added. We think this happens because the \textbf{add-priority} action fact is ignored
 when it is sent to a node located in a different thread.
@@ -92,10 +89,11 @@ These statistics and the speedup (\textbf{Speedup}) when using the coordinated v
 We have tried to understand if there is a correlation between the graph structure and the coordination speedup. We can see that a higher number
 of nodes and edges tends to improve execution. The US Airports dataset stands out because it is a small sized graph where a subset of airports
 (70) have most connections. The other smaller datasets have a much stable distribution.
-Still, the standard execution for most datasets is around 150\% slower than the coordinated execution.
+Still, the coordinated execution for most datasets is 30\% faster than the regular execution. We also included the speedup plot of the coordinated version
+for the US Power Grid dataset in Fig.~\ref{exp:sssp-uspowergrid} that compares against the sequential execution without coordination.
 
 \begin{table*}[ht]
-   
+
 \begin{center}
     \begin{tabular}{| l | c | c | c | c | c | c | c |}
     \hline
@@ -110,6 +108,14 @@ Still, the standard execution for most datasets is around 150\% slower than the 
      \caption{Summarized information about the datasets used in the SSSP program.}
      \label{tbl:shortest_path_speedup}
 \end{table*}
+
+\begin{figure}[h!]
+     \centering
+   \resizebox{5cm}{!}{
+   \includegraphics[width=0.5\textwidth]{speedup_uspowergrid.pdf}}
+   \caption{Experimental results for the SSSP program with the US Power Grid dataset when using coordination.}
+   \label{exp:sssp-uspowergrid}
+\end{figure}
 
 While the previous results were computed using only one thread, we also see good speedups with multiple threads. However, the gains reduce as we add
 more threads because the decision of picking the best path is done at the thread level, thus reducing the opportunities for optimization.
@@ -136,9 +142,13 @@ runs with the extra coordination rules. Again, the scalability lines are very si
 Finally, the last plot (Fig.~\ref{exp:splashbp}~(c)) presents the improvements of the coordinated version over the basic version when using a different
 number of threads. We can see that adding more threads tends to reduce the effectiveness of adding splash trees in both implementations.
 
-The previous results validate our thesis that using specific scheduling strategies for different programs will make programs faster. By using a small set
+The previous results validate our thesis that applying algorithm dependent scheduling strategies will make execution faster. By using a small set
 of action facts and derivation rules we were able to implement complex scheduling strategies present in GraphLab, a practical and powerful machine learning
 framework.
+
+\subsection{Memory footprint}
+
+TODO
 
 \subsection{Language expressiveness and conciseness}
 
