@@ -11,10 +11,10 @@ Rules without bodies are allowed in \lang and they are called axioms (line 15 in
 
 \subsection{Distribution}
 
-The first argument of every predicate must be typed as a \emph{node}. The node represents the location of some node in the \emph{graph structure}.
-Essentially, a program can be seen as a graph data structure where processors apply computation at the node level of the graph. Computation is
+The first argument of every predicate must be typed as a \emph{node}. The node represents a vertex in the \emph{graph structure}.
+Essentially, a program can be seen as a graph data structure where processors do computation at the node level. Computation is
 parallelized by processing many nodes concurrently. The edges of this graph are defined through a special class of facts called \emph{structural facts}
-and allow transmission of facts between the nodes of the graph.
+and allow transmission of facts between nodes.
 
 For distribution and data partitioning purposes, derivation rules are constrained by the expressions that can be written in the body.
 The body of every rule can only refer to facts in the same node.
@@ -23,7 +23,7 @@ The database of the program is then partitioned by the first argument of each fa
 program only make use of facts from a single node. The facts of each node represent both the state of the computation and data.
 We drew some inspiration from the Linda system~\cite{1663305}, where the tuple space contains the data and is used by the processors
 to communicate and do computation.
-This differs greatly from imperative languages, since in those languages data and computation are two separate entities.
+This differs from imperative languages, since in those languages data and computation are two separate entities.
 
 \subsection{Linearity}
 
@@ -166,9 +166,8 @@ rule order makes things easier for ordering local computation.
 
 We do a small optimization to reduce the number of derivations of persistent facts. We
 divide the program rules into two sets: \emph{persistent rules} and \emph{non persistent rules}.
-Persistent rules are rules where only persistent facts are involved. In such rules, we compile
-them incrementally, that is, when we get a new persistent fact we first attempt to fire
-all the persistent rules where this predicate is used in the body. This is called
-the \emph{pipelined semi-naive} evaluation and it originated in the P2 system~\cite{Loo-condie-garofalakis-p2}. This evaluation method avoids excessing re-derivations
-of the same fact. The order of derivation does not matter for those rules, since
+Persistent rules are rules where only persistent facts are involved. We compile such rules
+incrementally, that is, we attempt to fire all rules where a persistent fact is used. This is called
+the \emph{pipelined semi-naive} evaluation and it originated in the P2 system~\cite{Loo-condie-garofalakis-p2}.
+This evaluation method avoids excessing re-derivations of the same fact. The order of derivation does not matter for those rules, since
 only persistent facts are used.

@@ -194,6 +194,7 @@ of the \lang runtime and preliminary results show some good speedups for this pr
 
 \begin{table}[ht]
 \begin{center}
+   \resizebox{8.5cm}{!}{
     \begin{tabular}{| c | c | l | c |}
     \hline
     \textbf{Program} & \textbf{\lang} & \textbf{Others} & \textbf{Average} \\ \hline \hline
@@ -202,7 +203,7 @@ of the \lang runtime and preliminary results show some good speedups for this pr
     BP & 50 & 90 (GraphLab) & 55\% \\ \hline
     Splash BP & 50 & 350 (GraphLab) & 14\% \\ \hline
     N Queens & 40 & 300 (C~\cite{8queens-parallel}), 400 (MPI~\cite{Rolfe:2008:SMA:1473195.1473217}) & 11\% \\ \hline
-    \end{tabular}
+    \end{tabular}}
 \end{center}
      \caption{Comparison of source code size against other languages.}
      \label{tbl:length}
@@ -211,6 +212,5 @@ of the \lang runtime and preliminary results show some good speedups for this pr
 The GraphLab versions of PageRank, BP and Splash BP are all written in C++ and can be run in
 parallel. We only counted the bare minimum number of lines for these programs (the update function)
 so that our analysis is not biased towards \lang. The \lang versions of PageRank and BP are around
-half of the size of the GraphLab versions. However, \lang really shines when we count the scheduling
-code of the Splash BP program and compare it against the corresponding code of GraphLab. The \lang
-version is far more concise.
+half of the size of the GraphLab versions. However, \lang really shines in the Splash BP program because
+the code is much more concise than the corresponding code of GraphLab.
