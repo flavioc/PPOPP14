@@ -68,10 +68,10 @@ To do this, we are using the following 3 programs:
 Fig.~\ref{exp:heat-transfer} shows the results for the heat transfer program. \textbf{Threads} represents the speedup of the multicore execution
 without coordination, while \textbf{Coord} represents the speedup when using coordination directives.
 Both execution modes were compared against the sequential execution without coordination.
-When using one thread, the coordinated version is almost 2 times
-faster, however this speedup is slightly reduced as more threads are added. We think this happens because the \textbf{add-priority} action fact is ignored
+When using 1 thread, the coordinated version is almost 2 times
+faster, however this speedup is slightly reduced as more threads are added. This happens because the \textbf{add-priority} action fact is ignored
 when it is sent to a node located in a different thread.
-Also note how the \textbf{Coord} line goes over the \textbf{Ideal} line, to the point where using 2 threads is 4 times faster when compared to a sequential
+Also note how the \textbf{Coord} line goes over the \textbf{Ideal} line, to the point where using 2 threads is 4 times faster than the sequential
 version without priorities.
 
 \begin{figure}[h!]

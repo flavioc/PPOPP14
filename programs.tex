@@ -78,7 +78,7 @@ we first keep track of all messages sent/received (and overwrite them when we re
 and recompute the belief when we want, instead of synchronizing between nodes.
 This way, we can prioritize the computation of beliefs when
 a node's belief value changes significantly. When that happens, we set the priority of its
-neighbors so that they can recompute their beliefs using important messages.
+neighbors so that they can recompute their beliefs.
 
 The asynchronous approach proves to be a nice improvement over the synchronous version. Still, it
 is possible to do even better. Gonzalez et al~\cite{Gonzalez+al:aistats09paraml} developed an optimal
