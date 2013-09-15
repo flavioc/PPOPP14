@@ -29,7 +29,7 @@ rule 3. We also use 2 coordination directives:
 a new distance (line 18).
 \end{itemize}
 
-With these directives, we ensure that we pick the node with the smallest path distance
+With these directives, we ensure that we pick the node with the smallest distance
 first. If we are only using 1 thread, then our algorithm will behave like Dijkstra's shortest
 path algorithm~\cite{Dijkstra}. When using more than 1 thread, each thread will pick the smallest
 path from a subset of nodes. This is an example where using coordination directives will
@@ -90,7 +90,7 @@ their belief. These splash trees are built iteratively until we reach convergenc
 The code in Fig.~\ref{code:sbp} presents the coordination component of the Belief Propagation problem.
 Please note that we just appended the code in Fig.~\ref{code:sbp} to a working but unoptimized version
 of the algorithm.
-In the coordination code have three sections:
+In the coordination code we have three sections:
 \begin{description}
    \item[Tree building]: Each node has a \texttt{waiting} fact that is used to start the tree building process. When the highest priority is picked we create a token that will navigate through the tree. Note that in the rule located in lines 11-18 we check if the priority of the new node to add to the tree is positive and that both nodes are in the same processor. We want the tree to be kept in the same processor.
    \item[First phase]: In the third rule (lines 8-9), when we reach a certain number of nodes in the tree, we generate \texttt{first-phase} in order to update the beliefs of all nodes in tree starting from the leaves and ending at the root. As we update the nodes, we generate \texttt{update} to update the belief values (line 29).
@@ -145,7 +145,7 @@ second-phase(A, [A, B | Next], Back)
    -o update(A), waiting(Back), *underline{schedule-next(B)},
       second-phase(B, [B | Next], A).
 \end{Verbatim}
-  \caption{Coordination code for the Splash Belief Propagation.}
+  \caption{Coordination code for the Splash Belief Propagation. Note that a @ before a linear fact means it will be re-derived.}
   \label{code:sbp}
 \end{figure}
 \normalsize
