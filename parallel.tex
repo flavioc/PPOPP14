@@ -1,13 +1,13 @@
 
 We developed a compiler and a virtual machine that runs
-byte-code. The virtual machine makes use of the pthreads library.
+byte-code. The virtual machine for multicores makes use of the pthreads library.
 
 \subsection{Overview}
 
 The goal of our system is to keep the threads as busy as possible and to reduce inter-thread communication.
 The load balancing aspect of the system is performed by our work scheduler that is based on a work
 stealing algorithm. More specifically, threads can steal nodes of other threads to keep themselves busy.
-Reduction of inter-thread communication is achieved by smart partitioning of nodes.
+Reduction of inter-thread communication is achieved by using a breadth-first search method to order nodes.
 
 When the virtual machine starts, it reads the byte-code file and starts all threads.
 As a first step, all threads will grab their nodes and assign the \texttt{owner} property of each node.
@@ -22,7 +22,7 @@ there will be no more work to do and the threads will go idle. There is a global
 boolean flag and one boolean flag (active/idle) for each thread that are used to detect termination.
 Once a thread goes idle, it decrements the global counter and changes its flag to idle. If the counter
 goes to zero, the global flag is set to idle. Since every thread will be busy-waiting and checking
-the global flag, they will detect that it is idle and then exit the program.
+the global flag, they will detect the change and exit the program.
 
 \subsection{Threads}
 
@@ -32,7 +32,7 @@ We use a double-linked list because it will be easier to move the node from this
 \emph{priority queue}. The priority queue is an array based binary heap data structure that contains
 all the unprocessed nodes with priority. To reduce the memory footprint of our queues, all the bookkeeping fields
 such as the \texttt{next} and \texttt{prev} are part of the node data structure.
-Each node also contains flags that will tell in which queue they are currently in and if they have facts to process.
+Each node also contains flags that indicate the queue where they are currently in and if they have facts to process.
 
 \subsection{Nodes}
 
@@ -52,7 +52,7 @@ In Fig.~\ref{fig:node} we present the node data structure and its fields. We sum
    \item[queue data]: Includes the field \texttt{Prev} (for the normal queue), \texttt{Next} (for the normal queue), \texttt{Prio} (priority) and \texttt{Queue Pos} (for the priority queue).
    \item[flags]: If the node is currently in the queue and in which queue. Includes \texttt{In Queue}, \texttt{In Normal Queue} and \texttt{In Priority Queue}.
    \item[temporary store]: A simple linked-list containing the unprocessed facts called \texttt{Temporary Store}.
-   \item[database]: All the facts already processed and are true for this node. Is implemented as a trie and it is called \texttt{Tries}.
+   \item[database]: All the facts already processed which are true for this node. Is implemented as a trie and it is called \texttt{Tries}.
    \item[rule matcher]: The \texttt{Matcher} maintains the number of facts per predicate and which rules can be activated next. This is used for selecting the candidate rules.
    \item[owner]: Pointer to the owner thread. \texttt{Owner} in the figure.
    \item[lock]: A \texttt{Lock} mutex used to manipulate the node.

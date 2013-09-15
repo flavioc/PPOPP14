@@ -18,8 +18,8 @@ at the same time. This disallows the manipulation of a node by multiple processo
 
 We use action facts to change the behavior of the runtime system. In particular, one can change the
 order in which nodes are evaluated by means of node priority. Node priority works at the processor level
-so that each processor can make a local decision about which node to run next. Without coordination,
-nodes can be picked up at any arbitrary order (we use a FIFO approach by default).
+so that each processor can make a local decision about which node of the graph to run next. Without coordination,
+nodes are picked arbitrarily (a FIFO approach is used by default).
 
 The use of linear logic makes this possible and useful since the order in which nodes are executed
 may reduce the time needed to reach quiescence. When only using

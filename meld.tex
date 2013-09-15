@@ -1,4 +1,4 @@
-\lang is a \emph{forward chaining} logic programming language in the style of Datalog~\cite{Ullman:1990:PDK:533142}. The program is defined as a set of axioms (facts that are initially true) and a set of \emph{derivation rules}. Initially, we populate the \emph{database of facts} with the axioms and then we determine which derivation rules can be applied by using our current database. Once a rule is applied, we derive new facts, which are then added to the database
+\lang is a \emph{forward chaining} logic programming language in the style of Datalog~\cite{Ullman:1990:PDK:533142}. The program is defined as a set of axioms (facts that are initially true) and a set of \emph{derivation rules}. Initially, we populate the \emph{database of facts} with the axioms and then we determine which derivation rules can be applied by using the current database. Once a rule is applied, we derive new facts, which are then added to the database
 This process is repeated until we reach \emph{quiescence}, that is, when we can no longer derive new facts.
 
 Each fact is an association between a \emph{predicate} and a tuple of values. A predicate is a pair with a name and a tuple of types (the argument types). \lang rules are type-checked using the predicate declarations in the header of the program. \lang has a simple type system that includes the following types: \emph{node}, \emph{int}, \emph{float}, \emph{string}, \emph{bool} and \emph{list X}, where \emph{X} is any of the previous 5 types.
@@ -12,9 +12,9 @@ Rules without bodies are allowed in \lang and they are called axioms (line 15 in
 \subsection{Distribution}
 
 The first argument of every predicate must be typed as a \emph{node}. The node represents a vertex in the \emph{graph structure}.
-Essentially, a program can be seen as a graph data structure where processors do computation at the node level. Computation is
+Essentially, a program can be seen as a graph data structure where processors do computation at the node/vertex level. Computation is
 parallelized by processing many nodes concurrently. The edges of this graph are defined through a special class of facts called \emph{structural facts}
-and allow transmission of facts between nodes.
+that allow transmission of facts between nodes.
 
 For distribution and data partitioning purposes, derivation rules are constrained by the expressions that can be written in the body.
 The body of every rule can only refer to facts in the same node.
@@ -107,13 +107,13 @@ of nodes in the CPU and scheduling information. In Meld, sensing facts
 were used to get information about the outside world, like temperature, touch, neighborhood status,
 etc; while action facts were used by the robots to perform actions.
 
-Action facts are used to perform two main functions. One is for doing I/O or changing things
+Action facts are linear facts which are consumed when the corresponding action is performed.
+One action is doing I/O or changing things
 in the user interface. For example, when we want to change the color of nodes or the label
 of edges, we just derive a new action fact and the action is performed in the interface.
 Another use of action facts is to change the order things are evaluated in the runtime system.
 It is possible to give hints to the virtual machine in order to prioritize the computation of
 some nodes.
-Action facts are linear facts which are consumed when the corresponding action is performed.
 
 With sensing facts and action facts, we can write "meta-rules" that will sense the state of the runtime system
 and then apply decisions in order to improve execution speed. In some situations, such set of rules can be
@@ -157,7 +157,7 @@ On the other hand, when linear facts are consumed, some rules may not be applica
 we may need to remove them from the priority queue. In our implementation,
 we keep a fact count for each predicate per node and also which predicates are needed for each rule. Whenever we have facts of some
 predicates we can efficiently check if new rules are applicable for a specific node. We keep taking rules from the
-queue until the queue is empty. However, we do not check for rule constraints.
+queue until the queue is empty.
 
 Node execution can be performed at any time. This means that the programmer cannot expect
 that facts coming from other nodes will be considered as a whole or partially.
