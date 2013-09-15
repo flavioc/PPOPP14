@@ -141,7 +141,7 @@ uses the \textbf{fifo} scheduler that works identically to the basic \lang sched
 The plot in Fig.~\ref{exp:splashbp}~(b) shows the scalability of the coordinated version. For GraphLab we used the \textbf{splash} scheduler, while \lang
 runs with the extra coordination rules. Again, the scalability lines are very similar, but GraphLab appears to be slightly more scalable.
 Finally, the last plot (Fig.~\ref{exp:splashbp}~(c)) presents the improvements of the coordinated version over the basic version when using a different
-number of threads. We can see that adding more threads tends to reduce the effectiveness of splash trees in both systems.
+number of threads. With only 1 thread, we get almost a 5-fold speedup over the version without coordination. We can also see that adding more threads tends to reduce the effectiveness of splash trees in both systems.
 
 The previous results validate our thesis that applying algorithm dependent scheduling strategies will make execution faster. By using a small set
 of action facts and derivation rules we were able to implement complex scheduling strategies present in GraphLab, a practical and powerful machine learning
