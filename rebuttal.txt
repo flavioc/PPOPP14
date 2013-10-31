@@ -14,7 +14,7 @@ related work (#2,#3,#4):
 Why splashBP (#1,#2):
 Evaluation against other languages (all): 
 
-	only direct comparison is to graphlab using C++ (specifically
+	Only direct comparison is to graphlab using C++ (specifically
 	splashBP).  LM is 3-4x slower than C++.  We will clear up the
 	description of splashBP and cite graphlab.  All our sources
 	are available on github.
@@ -78,12 +78,12 @@ database prefix (#3):
 
 rules without heads (#4): 
 
-	They don’t have a name but they can be expressed as follows:
+   They don't have a name but they can be expressed as follows
 	a(X),b(X) -o 1.
 
 new axioms (#4): 
 
-	yes.  
+	Yes.  
 	  axiom(A, ...). // for all nodes
 	  axiom(@0, …). // just for node 0
 
@@ -100,3 +100,4 @@ analysis (#4):
 
 	 In previous work we have shown that we can prove deadlock and
 	 livelock freedom for a non-trival parallel program.
+
