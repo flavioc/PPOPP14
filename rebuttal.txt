@@ -1,65 +1,102 @@
 First, beyond the pro forma thanks, we want to express our sincere
-appreciation for the high quality reviews.  As pointed out, the paper
-is rough particularly with respect to the evaluation.  We are probably
-trying to accomplish too much by introducing logic programming, linear
-logic, and coordination simultaneously.  We appreciate the guidance in
-changing the presentation to make it clearer to the reader.  
+appreciation for the high quality reviews.  The paper is rough
+particularly with respect to the evaluation.  We are probably trying
+to accomplish too much by simultaneously introducing logic
+programming, linear logic (LL), and coordination.  We appreciate the
+guidance in changing the presentation to make it clearer to the
+reader.
 
-Why splashBP (1/2): it is the one example that we have a direct comparison
-to C++ code.  We will make the description clearer and cite the
-graphlab work.  All our sources are available on github.
+related work (#2,#3,#4): 
 
-related work (2/3/4): We will definitely expand the comparison to
-other functional/declarative/coordination languages (suggested by 3/4).
+	We will expand the comparison to other
+	functional/declarative/coordination languages.
 
-Evaluation against other languages (all): Our one direct comparison
-is to graphlab implementations written in C++.  LM is 3-4x slower than
-the C++ implementation.  We did not go into detail because LM is
-currently interpreted and the interpreter is highly UNoptimized.
-While we will tackle this soon, we felt that the novel ideas of linear
-logic, coordination, and provability were interesting enough as long
-as we could show basic scalability.
+Why splashBP (#1,#2):
+Evaluation against other languages (all): 
 
-Suitable algorithms (1): LM is targeted towards broadly to graph based
-algorithms, particularly with irregular parellelism.  Among others,
-Many ML algorithms fall into this catagory.
+	only direct comparison is to graphlab using C++ (specifically
+	splashBP).  LM is 3-4x slower than C++.  We will clear up the
+	description of splashBP and cite graphlab.  All our sources
+	are available on github.
 
-Pruning & improvement (1/3): For the heat transfer program, the number of
-applied rules decreases by 50% when using coordination. 
+	We did not go into more detail because LM is currently
+	interpreted by a very UNoptimized interpreter.  We are
+	currently working on this, but felt that the ideas of LL,
+	coordination, and provability were interesting as long as we
+	could show basic scalability.  
 
-Advantages of Linear Logic (?): 1-To our knowledge LM is the first example
-of using linear logic to solve real world problems, 2-It supports
-state manipulation while still remaining declarative. (compare to
-prolog's cut/assert/retract etc.) 3-Often uses less memory, 4-programs
-become shorter.
+Suitable algorithms (#1): 
 
-Ease of programming (?): Comes from 1-logic programming (both linear and
-classical) and 2-allowing coordination to be specified in the same
-language.
+	LM is targeted towards graph based algorithms, particularly
+	with irregular parellelism.
 
-Scalability (3): We will be clearer about this in the paper.  The
-queues are all local.  The only issue for scalability is in detecting
-termination.  (As an aside: We recently have LM running under MPI with
-similar scaling results.)
+Pruning & improvement (#1,#3): 
 
-superlinear speedup (?): We will explain this better.  In short, the best
-sequential program would be very hard to write.  The parallel codes
-update the belief's of each node non-determinisitically (between 1 and
-4 updates before recalculation) and thus often get faster convergence
-(than the serial which does exactly 2 every time).
+	For heat transfer program, the number of applied rules
+	decreases by 50% when using coordination.
 
-priority (#3): If the order is descending, the priority will become negative.
+Advantages of LL (all): 
 
-database prefix (#3): The common prefix is for facts with similar arguments: e.g., f(1,2,4) and f(1,2,5) share 1 and 2.
+	Both performance and programming ease:
+	1-To our knowledge LM is the only example of using LL to solve
+	real world problems,
+	2-It supports state manipulation while still remaining
+	declarative. (compare to prolog's cut/assert/retract etc.)
+	3-Often uses less memory, 
+	4-programs become shorter, 
+	5-gives programmer sense of control while still being declarative.  
 
-rules without heads (#4): They don’t have a name but they can be expressed as follows: a(X),b(X) -o 1.
+Ease of programming (#2): 
 
-new axions (#4): yes.  
-    axiom(A, ...). // this is an axiom created in all nodes
-    axiom(@0, …). // just for node 0
+	Comes from 1-LL and 2-allowing coordination to be specified in
+	the same language.
 
-hiding parallelism (#4):  We believe that our approach of allowing the programmer to guide the parallelism through the first class coordination directives gives the progammer the best of both worlds, e.g., allowing the compiler to do it all and then allowing the programmer to adjust and optimize as needed WITHOUT requiring the algorithm to be obscured by the parallelization process.
+Scalability (#3): 
 
-analysis (#4): In previous work we have shown that we can
-automatically prove deadlock and livelock freedom for a non-trival
-parallel program.
+	We will be clearer in the paper.  The queues are all local.
+	The only issue comes in detecting termination.  (As an aside:
+	We recently have LM running under MPI with similar scaling
+	results.)
+
+superlinear speedup (#1,#3,#4): 
+
+	We will explain this better.  In short, the best sequential
+	program would be very hard to write.  The parallel codes
+	update the belief's of each node non-determinisitically
+	(between 1 and 4 updates before recalculation) and thus often
+	get faster convergence (than the serial which does exactly 2
+	every time).
+
+priority (#3): 
+
+	If the order is descending, the priority will become negative.
+
+database prefix (#3): 
+
+	 The common prefix is for facts with same arguments: e.g.,
+	 f(1,2,4) and f(1,2,5) share 1 and 2.
+
+rules without heads (#4): 
+
+	They don’t have a name but they can be expressed as follows:
+	a(X),b(X) -o 1.
+
+new axions (#4): 
+
+	yes.  
+	  axiom(A, ...). // this is an axiom created in all nodes
+	  axiom(@0, …). // just for node 0
+
+hiding parallelism (#4): 
+
+	We believe that our approach of allowing the programmer to
+	guide the parallelism through the first class coordination
+	directives gives the progammer the best of both worlds: let
+	the compiler do as much as possible and then allow the
+	programmer to optimize as needed WITHOUT requiring the
+	algorithm to be obscured by the parallelization process.
+
+analysis (#4): 
+
+	 Previously we have shown that we can prove deadlock and
+	 livelock freedom for a non-trival parallel program.
