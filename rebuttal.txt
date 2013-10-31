@@ -61,11 +61,11 @@ Scalability (#3):
 superlinear speedup (#1,#3,#4): 
 
 	We will explain this better.  In short, the best sequential
-	program would be very hard to write.  The parallel codes
-	update the belief's of each node non-determinisitically
+	program would be very hard to write.  The parallel code
+	updates the belief's of each node non-determinisitically
 	(between 1 and 4 updates before recalculation) and thus often
-	get faster convergence (than the serial which does exactly 2
-	every time).
+	get faster convergence than the serial which does exactly 2
+	every time.
 
 priority (#3): 
 
@@ -81,22 +81,22 @@ rules without heads (#4):
 	They don’t have a name but they can be expressed as follows:
 	a(X),b(X) -o 1.
 
-new axions (#4): 
+new axioms (#4): 
 
 	yes.  
-	  axiom(A, ...). // this is an axiom created in all nodes
+	  axiom(A, ...). // for all nodes
 	  axiom(@0, …). // just for node 0
 
 hiding parallelism (#4): 
 
 	We believe that our approach of allowing the programmer to
 	guide the parallelism through the first class coordination
-	directives gives the progammer the best of both worlds: let
+	directives gives the programmer the best of both worlds: let
 	the compiler do as much as possible and then allow the
 	programmer to optimize as needed WITHOUT requiring the
 	algorithm to be obscured by the parallelization process.
 
 analysis (#4): 
 
-	 Previously we have shown that we can prove deadlock and
+	 In previous work we have shown that we can prove deadlock and
 	 livelock freedom for a non-trival parallel program.
