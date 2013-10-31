@@ -1,0 +1,64 @@
+First, beyond the pro forma thanks, we want to express our sincere
+appreciation for the high quality reviews.  As the reviewers pointed
+out, the paper is a bit rough particularly with respect to the
+evaluation.  We are probably trying to accomplish too much by
+introducing logic programming, linear logic, and coordination all at
+the same time.  We appreciate the guidance (particularly from #1) in
+changing the presentation to make it clearer to the reader.  We
+presented splashBP because it is the one example that we have a direct
+comparison to C++ code.  We will make the description clearer and cite
+the graphlab work.  All our sources are available on github.  We will
+definitely expand the comparison to other functional/declarative/coordination
+languages (suggested by #3/4).
+
+Comparison to other languages: Our one direct comparison is to
+graphlab implementations written in C++.  LM is 3-4x slower than the
+C++ implementation.  We did not go into detail because LM is currently
+interpreted and the interpreter is highly UNoptimized.  While we will
+tackle this soon, we felt that the novel ideas of linear logic,
+coordination, and provability were interesting enough as long as we
+could show basic scalability.
+
+Suitable algorithms: LM is targeted towards broadly to graph based
+algorithms, particularly with irregular parellelism.  Among others,
+Many ML algorithms fall into this catagory.
+
+Pruning & improvement (#3&x): For the heat transfer program, the number of
+applied rules decreases by 50% when using coordination. 
+
+Advantages of Linear Logic: 1-To our knowledge LM is the first example
+of using linear logic to solve real world problems, 2-It supports
+state manipulation while still remaining declarative. (compare to
+prolog's cut/assert/retract etc.) 3-Often uses less memory, 4-programs
+become shorter.
+
+Ease of programming: Comes from 1-logic programming (both linear and
+classical) and 2-allowing coordination to be specified in the same
+language.
+
+Scalability (#3): We will be clearer about this in the paper.  The
+queues are all local.  The only issue for scalability is in detecting
+termination.  (As an aside: We recently have LM running under MPI with
+similar scaling results.)
+
+superlinear speedup: We will explain this better.  In short, the best
+sequential program would be very hard to write.  The parallel codes
+update the belief's of each node non-determinisitically (between 1 and
+4 updates before recalculation) and thus often get faster convergence
+(than the serial which does exactly 2 every time).
+
+priority (#3): If the order is descending, the priority will become negative.
+
+database prefix (#3): The common prefix is for facts with similar arguments: e.g., f(1,2,4) and f(1,2,5) share 1 and 2.
+
+rules without heads (#4): They don’t have a name but they can be expressed as follows: a(X),b(X) -o 1.
+
+new axions (#4): yes.  
+    axiom(A, ...). // this is an axiom created in all nodes
+    axiom(@0, …). // just for node 0
+
+hiding parallelism (#4):  We believe that our approach of allowing the programmer to guide the parallelism through the first class coordination directives gives the progammer the best of both worlds, e.g., allowing the compiler to do it all and then allowing the programmer to adjust and optimize as needed WITHOUT requiring the algorithm to be obscured by the parallelization process.
+
+analysis (#4): In previous work we have shown that we can
+automatically prove deadlock and livelock freedom for a non-trival
+parallel program.
