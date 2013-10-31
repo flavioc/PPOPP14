@@ -81,7 +81,7 @@ rules without heads (#4):
 	They don’t have a name but they can be expressed as follows:
 	a(X),b(X) -o 1.
 
-new axions (#4): 
+new axioms (#4): 
 
 	yes.  
 	  axiom(A, ...). // this is an axiom created in all nodes
